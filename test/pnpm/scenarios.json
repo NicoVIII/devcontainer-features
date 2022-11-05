@@ -1,0 +1,20 @@
+{
+    "debian-latest": {
+        "image": "debian:latest",
+        "features": {
+            "ghcr.io/devcontainers/features/node": {
+                "version": "lts"
+            },
+            "pnpm": {}
+        }
+    },
+    "ubuntu-latest": {
+        "image": "ubuntu:latest",
+        "features": {
+            "ghcr.io/devcontainers/features/node": {
+                "version": "lts"
+            },
+            "pnpm": {}
+        }
+    }
+}

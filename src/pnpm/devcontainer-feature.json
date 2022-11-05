@@ -1,0 +1,22 @@
+{
+    "name": "Pnpm",
+    "id": "pnpm",
+    "version": "1.0.0",
+    "description": "Installs pnpm, requires npm installed",
+    "options": {
+        "version": {
+            "type": "string",
+            "proposals": [
+                "latest",
+                "7.14.2",
+                "next-7",
+                "latest-6"
+            ],
+            "default": "latest",
+            "description": "Select a specific version, otherwise the latest one will be used"
+        }
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/node"
+    ]
+}
