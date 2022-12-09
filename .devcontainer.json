@@ -12,5 +12,5 @@
         "ghcr.io/devcontainers/features/docker-in-docker:1": {}
     },
     "remoteUser": "node",
-    "postCreateCommand": "npm install -g @devcontainers/cli@0.20.0"
+    "postCreateCommand": "npm install -g @devcontainers/cli@0.25.3"
 }
