@@ -1,8 +1,9 @@
 {
-    "name": "Pnpm",
+    "name": "Pnpm (via npm)",
     "id": "pnpm",
     "version": "1.0.0",
-    "description": "Installs pnpm, requires npm installed",
+    "description": "Fast, disk space efficient package manager.",
+    "documentationURL": "https://github.com/NicoVIII/devcontainer-features/tree/main/src/pnpm",
     "options": {
         "version": {
             "type": "string",
@@ -13,7 +14,7 @@
                 "latest-6"
             ],
             "default": "latest",
-            "description": "Select a specific version, otherwise the latest one will be used"
+            "description": "Select the version of Pnpm to install."
         }
     },
     "installsAfter": [
