@@ -1,7 +1,7 @@
 
 # Pnpm (pnpm)
 
-Installs pnpm, requires npm installed
+Fast, disk space efficient package manager.
 
 ## Example Usage
 
