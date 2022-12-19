@@ -2,17 +2,20 @@
     "debian-latest": {
         "image": "debian:latest",
         "features": {
-            "ghcr.io/devcontainers/features/node": {
-                "version": "lts"
-            },
             "pnpm": {}
         }
     },
     "ubuntu-latest": {
         "image": "ubuntu:latest",
         "features": {
+            "pnpm": {}
+        }
+    },
+    "ubuntu-with-node": {
+        "image": "ubuntu:latest",
+        "features": {
             "ghcr.io/devcontainers/features/node": {
-                "version": "lts"
+                "version": "16"
             },
             "pnpm": {}
         }
