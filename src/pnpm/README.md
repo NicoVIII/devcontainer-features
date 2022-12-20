@@ -1,5 +1,5 @@
 
-# Pnpm (pnpm)
+# Pnpm (via npm) (pnpm)
 
 Fast, disk space efficient package manager.
 
@@ -7,9 +7,7 @@ Fast, disk space efficient package manager.
 
 ```json
 "features": {
-    "ghcr.io/NicoVIII/devcontainer-features/pnpm:1": {
-        "version": "latest"
-    }
+    "ghcr.io/NicoVIII/devcontainer-features/pnpm:2": {}
 }
 ```
 
@@ -17,7 +15,7 @@ Fast, disk space efficient package manager.
 
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
-| version | Select a specific version, otherwise the latest one will be used | string | latest |
+| version | Select the version of Pnpm to install. | string | latest |
 
 
 
