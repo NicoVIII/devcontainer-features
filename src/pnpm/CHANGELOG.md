@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning].
 [semantic versioning]: https://semver.org/spec/v2.0.0.html
 
 <!-- Versions -->
-[unreleased]: https://github.com/NicoVIII/devcontainer-features/compare/v2.0.0...HEAD
+[unreleased]: https://github.com/NicoVIII/devcontainer-features/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/NicoVIII/devcontainer-features/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/NicoVIII/devcontainer-features/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/NicoVIII/devcontainer-features/releases/tag/v1.0.0
