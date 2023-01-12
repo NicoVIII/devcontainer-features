@@ -19,5 +19,13 @@
             },
             "pnpm": {}
         }
+    },
+    "ubuntu-with-version": {
+        "image": "ubuntu:latest",
+        "features": {
+            "pnpm": {
+                "version": "6.35.1"
+            }
+        }
     }
 }
