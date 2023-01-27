@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+## [2.0.2] - 2023-01-27
+
+### Changed
+
+- DEPRECATE: Use `ghcr.io/devcontainers-contrib/features/pnpm:2` instead
+
 ## [2.0.1] - 2023-01-12
 
 ### Fixed

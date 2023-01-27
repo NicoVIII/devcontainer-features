@@ -1,7 +1,7 @@
 {
     "name": "Pnpm (via npm)",
     "id": "pnpm",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "description": "Fast, disk space efficient package manager.",
     "documentationURL": "https://github.com/NicoVIII/devcontainer-features/tree/main/src/pnpm",
     "options": {
@@ -17,6 +17,7 @@
             "description": "Select the version of Pnpm to install."
         }
     },
+    "deprecated": true,
     "installsAfter": [
         "ghcr.io/devcontainers/features/node"
     ]
