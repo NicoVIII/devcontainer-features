@@ -13,5 +13,5 @@
         "ghcr.io/devcontainers/features/github-cli:1": {}
     },
     "remoteUser": "node",
-    "postCreateCommand": "npm install -g @devcontainers/cli@0.26.1"
+    "postCreateCommand": "npm install -g @devcontainers/cli@0.29.0"
 }
