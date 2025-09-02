@@ -1,0 +1,18 @@
+{
+    "name": "Gleam",
+    "id": "gleam",
+    "version": "1.0.0",
+    "description": "Gleam is a friendly language for building type-safe systems that scale!",
+    "documentationURL": "https://github.com/NicoVIII/devcontainer-features/tree/main/src/gleam",
+    "options": {
+        "version": {
+            "type": "string",
+            "proposals": [
+                "latest",
+                "1.12.2"
+            ],
+            "default": "latest",
+            "description": "Select the version of gleam to install."
+        }
+    }
+}
