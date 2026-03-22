@@ -1,6 +1,7 @@
 {
-    "image": "mcr.microsoft.com/devcontainers/javascript-node:3-22",
+    "image": "mcr.microsoft.com/devcontainers/base:2-noble",
     "features": {
+        "ghcr.io/devcontainers/features/node:1": {},
         "ghcr.io/devcontainers/features/docker-in-docker:2": {}
     },
     "postCreateCommand": "npm install -g @devcontainers/cli",

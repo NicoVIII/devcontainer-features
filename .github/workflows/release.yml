@@ -2,7 +2,7 @@ name: "Release dev container features & Generate Documentation"
 on:
   push:
     tags:
-      - "v*.*.*"
+      - "*-v*.*.*"
 
 jobs:
   deploy:
