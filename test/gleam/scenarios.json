@@ -1,0 +1,14 @@
+{
+    "debian-latest": {
+        "image": "debian:latest",
+        "features": {
+            "gleam": { "version": "1.15.2" }
+        }
+    },
+    "ubuntu-latest": {
+        "image": "ubuntu:latest",
+        "features": {
+            "gleam": { "version": "1.15.2" }
+        }
+    }
+}

@@ -23,6 +23,10 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
+# Change into tmp directory
+mkdir -p /tmp/gleam-feature
+cd /tmp/gleam-feature
+
 export DEBIAN_FRONTEND=noninteractive
 
 check_packages wget
@@ -33,9 +37,18 @@ if [ "$GLEAM_VERSION" = "latest" ]; then
   echo -e "Unsupported GLEAM version: latest.\nPlease set a specific version for now."
   exit 1
 else
-  URL="" # TODO
+  # Remove leading v if present
+  GLEAM_VERSION="${GLEAM_VERSION#v}"
+
+  URL="https://github.com/gleam-lang/gleam/releases/download/v$GLEAM_VERSION/gleam-v$GLEAM_VERSION-$arch-unknown-linux-musl.tar.gz"
+  # Download and check sha256sum
+  wget -qO "gleam-v$GLEAM_VERSION-$arch-unknown-linux-musl.tar.gz" "$URL"
+  wget -qO- "$URL.sha256" | sha256sum -c -
+  # Extract and move to /usr/local/bin
+  tar xf "gleam-v$GLEAM_VERSION-$arch-unknown-linux-musl.tar.gz"
+  chmod +x gleam
+  mv gleam /usr/local/bin/
 fi
-# TODO
 
-
+cd -
 echo "Done!"
