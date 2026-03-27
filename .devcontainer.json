@@ -2,9 +2,11 @@
     "image": "mcr.microsoft.com/devcontainers/base:2-noble",
     "features": {
         "ghcr.io/devcontainers/features/node:1": {},
-        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "disableIp6tables": true
+        }
     },
-    "postCreateCommand": "npm install -g @devcontainers/cli",
+    "postCreateCommand": "sudo update-alternatives --set iptables /usr/sbin/iptables-nft && npm install -g @devcontainers/cli",
     "customizations": {
         "vscode": {
             "extensions": [

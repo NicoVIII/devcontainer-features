@@ -14,41 +14,52 @@ check_packages() {
   fi
 }
 
-# Clean up
-rm -rf /var/lib/apt/lists/*
-
 # Ensure the script is run as root
 if [ "$(id -u)" -ne 0 ]; then
     echo -e 'Script must be run as root. Use sudo, su, or add "USER root" to your Dockerfile before running this script.'
     exit 1
 fi
 
-# Change into tmp directory
+# Clean up
+rm -rf /var/lib/apt/lists/*
+
+echo "Change into tmp directory"
 mkdir -p /tmp/gleam-feature
 cd /tmp/gleam-feature
 
 export DEBIAN_FRONTEND=noninteractive
 
-check_packages wget
 arch=$(dpkg --print-architecture)
+# Map arch to expected values
+case "$arch" in
+  "amd64") arch="x86_64" ;;
+  "arm64") arch="aarch64" ;;
+  *) echo "Unsupported architecture: $arch" && exit 1 ;;
+esac
 
 if [ "$GLEAM_VERSION" = "latest" ]; then
-  URL="" # TODO
-  echo -e "Unsupported GLEAM version: latest.\nPlease set a specific version for now."
-  exit 1
+  check_packages ca-certificates curl jq wget
+  # Determine latest version from GitHub API
+  GLEAM_VERSION=$(curl -fsSL https://api.github.com/repos/gleam-lang/gleam/releases/latest | jq -r .tag_name)
 else
-  # Remove leading v if present
-  GLEAM_VERSION="${GLEAM_VERSION#v}"
-
-  URL="https://github.com/gleam-lang/gleam/releases/download/v$GLEAM_VERSION/gleam-v$GLEAM_VERSION-$arch-unknown-linux-musl.tar.gz"
-  # Download and check sha256sum
-  wget -qO "gleam-v$GLEAM_VERSION-$arch-unknown-linux-musl.tar.gz" "$URL"
-  wget -qO- "$URL.sha256" | sha256sum -c -
-  # Extract and move to /usr/local/bin
-  tar xf "gleam-v$GLEAM_VERSION-$arch-unknown-linux-musl.tar.gz"
-  chmod +x gleam
-  mv gleam /usr/local/bin/
+  check_packages ca-certificates wget
 fi
 
+# Remove leading v if present
+GLEAM_VERSION="${GLEAM_VERSION#v}"
+URL="https://github.com/gleam-lang/gleam/releases/download/v$GLEAM_VERSION/gleam-v$GLEAM_VERSION-$arch-unknown-linux-musl.tar.gz"
+
+echo "Downloading Gleam v$GLEAM_VERSION for $arch from $URL..."
+wget -O "gleam-v$GLEAM_VERSION-$arch-unknown-linux-musl.tar.gz" "$URL"
+echo "Checking sha256sum..."
+wget -qO- "$URL.sha256" | sha256sum -c -
+echo "Extract and move to /usr/local/bin"
+tar xf "gleam-v$GLEAM_VERSION-$arch-unknown-linux-musl.tar.gz"
+chmod +x gleam
+mv gleam /usr/local/bin/
+
+# Clean up
 cd -
+rm -rf /var/lib/apt/lists/* /tmp/gleam-feature
+
 echo "Done!"

@@ -1,14 +1,38 @@
 {
+    "debian-default": {
+        "image": "debian:latest",
+        "features": {
+            "gleam": {}
+        }
+    },
     "debian-latest": {
         "image": "debian:latest",
         "features": {
-            "gleam": { "version": "1.15.2" }
+            "gleam": { "version": "latest" }
+        }
+    },
+    "debian-specific": {
+        "image": "debian:latest",
+        "features": {
+            "gleam": { "version": "1.15.1" }
+        }
+    },
+    "ubuntu-default": {
+        "image": "ubuntu:latest",
+        "features": {
+            "gleam": {}
         }
     },
     "ubuntu-latest": {
         "image": "ubuntu:latest",
         "features": {
-            "gleam": { "version": "1.15.2" }
+            "gleam": { "version": "latest" }
+        }
+    },
+    "ubuntu-specific": {
+        "image": "ubuntu:latest",
+        "features": {
+            "gleam": { "version": "1.15.1" }
         }
     }
 }
