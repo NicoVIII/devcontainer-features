@@ -1,5 +1,5 @@
 
-# Gleam (gleam)
+# Gleam (via GitHub Releases) (gleam)
 
 Gleam is a friendly language for building type-safe systems that scale!
 
