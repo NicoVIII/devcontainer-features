@@ -17,6 +17,12 @@ Gleam is a friendly language for building type-safe systems that scale!
 |-----|-----|-----|-----|
 | version | The version of Gleam to install. Use 'latest' to install the latest version. | string | latest |
 
+## Customizations
+
+### VS Code Extensions
+
+- `gleam.gleam`
+
 
 
 ---
