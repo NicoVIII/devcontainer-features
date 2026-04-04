@@ -1,0 +1,25 @@
+{
+    "name": "Amber (via GitHub Releases)",
+    "id": "amber",
+    "version": "0.1.0",
+    "description": "A language compiled to Bash. A modern, type-safe programming language that catches bugs and errors at compile time.",
+    "documentationURL": "https://github.com/NicoVIII/devcontainer-features/tree/main/src/amber",
+    "options": {
+        "version": {
+            "type": "string",
+            "description": "The version of Amber to install. Use 'latest' to install the latest version.",
+            "proposals": [
+                "latest",
+                "0.5.1-alpha"
+            ],
+            "default": "latest"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ph0enixkm.amber-language"
+            ]
+        }
+    }
+}

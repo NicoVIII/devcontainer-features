@@ -3,7 +3,8 @@ import { starts_with, slice } from "std/text"
 import { prepare, clean_up, get_architecture, ensure_packages, read_param } from "../../lib/lib.ab"
 
 // Config
-const needed_packages = ["ca-certificates", "wget"]
+const dependencies = ["bc"]
+const needed_packages = dependencies + ["ca-certificates", "wget", "xz-utils"]
 
 main {
     prepare()?
@@ -13,14 +14,14 @@ main {
 
     // Use tmp directory for installation
     echo "Change into tmp directory"
-    $ mkdir -p /tmp/gleam-feature $?
-    cd "/tmp/gleam-feature"
+    $ mkdir -p /tmp/amber-feature $?
+    cd "/tmp/amber-feature"
 
     const arch = get_architecture()?
 
     if version == "latest" {
         ensure_packages(needed_packages + ["jq", "curl"])?
-        version = $ curl -sL https://api.github.com/repos/gleam-lang/gleam/releases/latest | jq -r .tag_name $?
+        version = $ curl -sL https://api.github.com/repos/amber-lang/amber/releases/latest | jq -r .tag_name $?
     } else {
         ensure_packages(needed_packages)?
     }
@@ -30,21 +31,19 @@ main {
         version = slice(version, 1)
     }
 
-    const url = "https://github.com/gleam-lang/gleam/releases/download/v{version}/gleam-v{version}-{arch}-unknown-linux-musl.tar.gz"
+    const url = "https://github.com/amber-lang/amber/releases/download/{version}/amber-linux-musl-{arch}.tar.xz"
 
-    echo "Downloading Gleam {version} for {arch} from {url}..."
-    $ wget -qO "gleam-v{version}-{arch}-unknown-linux-musl.tar.gz" {url} $?
-    echo "Checking sha256sum..."
-    $ wget -qO- "{url}.sha256" | sha256sum -c - $?
+    echo "Downloading Amber {version} for {arch} from {url}..."
+    $ wget -qO "amber-linux-musl-{arch}.tar.xz" {url} $?
     echo "Extract and move to /usr/local/bin..."
-    $ tar xf "gleam-v{version}-{arch}-unknown-linux-musl.tar.gz" $?
-    file_chmod("gleam", "+x")?
-    mv "gleam" "/usr/local/bin/"?
+    $ tar -xf "amber-linux-musl-{arch}.tar.xz" $?
+    file_chmod("amber", "+x")?
+    mv "amber" "/usr/local/bin/"?
 
     // Clean up
     cd "-"
     clean_up()?
-    $ rm -rf /tmp/gleam-feature $?
+    $ rm -rf /tmp/amber-feature $?
 
     echo "Done!"
 }

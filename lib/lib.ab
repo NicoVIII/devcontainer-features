@@ -1,4 +1,4 @@
-import { echo_error, env_var_set } from "std/env"
+import { echo_error, env_var_get, env_var_set } from "std/env"
 
 fun ensure_run_as_root(): Null? {
     const id = $ id -u $?
@@ -41,4 +41,8 @@ pub fun prepare(): Null? {
     ensure_run_as_root()?
     clean_up()?
     env_var_set("DEBIAN_FRONTEND", "noninteractive")?
+}
+
+pub fun read_param(name: Text, default: Text): Text {
+    return env_var_get(name) failed { default }
 }

@@ -3,12 +3,14 @@ on:
   push:
     paths:
       - ".github/workflows/gleam.yml"
+      - "lib/**"
       - "src/gleam/**"
       - "test/gleam/**"
     tags:
   pull_request:
     paths:
       - ".github/workflows/gleam.yml"
+      - "lib/**"
       - "src/gleam/**"
       - "test/gleam/**"
 

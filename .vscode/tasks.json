@@ -27,6 +27,12 @@
                 "isDefault": true
             },
             "dependsOn": "Build"
+        },
+        {
+            "label": "Generate docs",
+            "type": "shell",
+            "command": "(cd ./src && devcontainer features generate-docs -n \"NicoVIII/devcontainer-features\")",
+            "problemMatcher": [ ]
         }
     ],
     "inputs": [
@@ -34,6 +40,7 @@
             "id": "feature",
             "description": "A available feature inside of this repo",
             "options": [
+                "amber",
                 "gleam"
             ],
             "type": "pickString"

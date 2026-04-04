@@ -10,8 +10,8 @@ starts_with__23_v0() {
     echo 1
   fi)"
     __status=$?
-    result_8="${command_0}"
-    ret_starts_with23_v0="$([ "_${result_8}" != "_1" ]; echo $?)"
+    result_9="${command_0}"
+    ret_starts_with23_v0="$([ "_${result_9}" != "_1" ]; echo $?)"
     return 0
 }
 
@@ -111,8 +111,8 @@ ensure_run_as_root__124_v0() {
         ret_ensure_run_as_root124_v0=''
         return "${__status}"
     fi
-    id_4="${command_5}"
-    if [ "$([ "_${id_4}" == "_0" ]; echo $?)" != 0 ]; then
+    id_5="${command_5}"
+    if [ "$([ "_${id_5}" == "_0" ]; echo $?)" != 0 ]; then
         echo_error__119_v0 "This script must be run as root" 1
         ret_ensure_run_as_root124_v0=''
         return 1
@@ -135,15 +135,15 @@ get_architecture__126_v0() {
         ret_get_architecture126_v0=''
         return "${__status}"
     fi
-    arch_6="${command_6}"
-    if [ "$([ "_${arch_6}" != "_amd64" ]; echo $?)" != 0 ]; then
+    arch_7="${command_6}"
+    if [ "$([ "_${arch_7}" != "_amd64" ]; echo $?)" != 0 ]; then
         ret_get_architecture126_v0="x86_64"
         return 0
-    elif [ "$([ "_${arch_6}" != "_arm64" ]; echo $?)" != 0 ]; then
+    elif [ "$([ "_${arch_7}" != "_arm64" ]; echo $?)" != 0 ]; then
         ret_get_architecture126_v0="aarch64"
         return 0
     else
-        echo_error__119_v0 "Unsupported architecture: ${arch_6}" 1
+        echo_error__119_v0 "Unsupported architecture: ${arch_7}" 1
         ret_get_architecture126_v0=''
         return 1
     fi
@@ -215,7 +215,9 @@ read_param__129_v0() {
 }
 
 # Config
-needed_packages_3=("ca-certificates" "wget")
+dependencies_3=("bc")
+array_9=("ca-certificates" "wget" "xz-utils")
+needed_packages_4=("${dependencies_3[@]}" "${array_9[@]}")
 prepare__128_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
@@ -223,74 +225,68 @@ if [ "${__status}" != 0 ]; then
 fi
 # Read params
 read_param__129_v0 "VERSION" "latest"
-version_5="${ret_read_param129_v0}"
+version_6="${ret_read_param129_v0}"
 # Use tmp directory for installation
 echo "Change into tmp directory"
-mkdir -p /tmp/gleam-feature
+mkdir -p /tmp/amber-feature
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-cd "/tmp/gleam-feature" || exit
+cd "/tmp/amber-feature" || exit
 get_architecture__126_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-arch_7="${ret_get_architecture126_v0}"
-if [ "$([ "_${version_5}" != "_latest" ]; echo $?)" != 0 ]; then
-    array_10=("jq" "curl")
-    array_add_11=("${needed_packages_3[@]}" "${array_10[@]}")
-    ensure_packages__127_v0 array_add_11[@]
+arch_8="${ret_get_architecture126_v0}"
+if [ "$([ "_${version_6}" != "_latest" ]; echo $?)" != 0 ]; then
+    array_12=("jq" "curl")
+    array_add_13=("${needed_packages_4[@]}" "${array_12[@]}")
+    ensure_packages__127_v0 array_add_13[@]
     __status=$?
     if [ "${__status}" != 0 ]; then
         exit "${__status}"
     fi
-    command_12="$(curl -sL https://api.github.com/repos/gleam-lang/gleam/releases/latest | jq -r .tag_name)"
+    command_14="$(curl -sL https://api.github.com/repos/amber-lang/amber/releases/latest | jq -r .tag_name)"
     __status=$?
     if [ "${__status}" != 0 ]; then
         exit "${__status}"
     fi
-    version_5="${command_12}"
+    version_6="${command_14}"
 else
-    ensure_packages__127_v0 needed_packages_3[@]
+    ensure_packages__127_v0 needed_packages_4[@]
     __status=$?
     if [ "${__status}" != 0 ]; then
         exit "${__status}"
     fi
 fi
 # Remove leading "v" if present
-starts_with__23_v0 "${version_5}" "v"
-ret_starts_with23_v0__29_8="${ret_starts_with23_v0}"
-if [ "${ret_starts_with23_v0__29_8}" != 0 ]; then
-    slice__25_v0 "${version_5}" 1 0
-    version_5="${ret_slice25_v0}"
+starts_with__23_v0 "${version_6}" "v"
+ret_starts_with23_v0__30_8="${ret_starts_with23_v0}"
+if [ "${ret_starts_with23_v0__30_8}" != 0 ]; then
+    slice__25_v0 "${version_6}" 1 0
+    version_6="${ret_slice25_v0}"
 fi
-url_9="https://github.com/gleam-lang/gleam/releases/download/v${version_5}/gleam-v${version_5}-${arch_7}-unknown-linux-musl.tar.gz"
-echo "Downloading Gleam ${version_5} for ${arch_7} from ${url_9}..."
-wget -qO "gleam-v${version_5}-${arch_7}-unknown-linux-musl.tar.gz" ${url_9}
-__status=$?
-if [ "${__status}" != 0 ]; then
-    exit "${__status}"
-fi
-echo "Checking sha256sum..."
-wget -qO- "${url_9}.sha256" | sha256sum -c -
+url_10="https://github.com/amber-lang/amber/releases/download/${version_6}/amber-linux-musl-${arch_8}.tar.xz"
+echo "Downloading Amber ${version_6} for ${arch_8} from ${url_10}..."
+wget -qO "amber-linux-musl-${arch_8}.tar.xz" ${url_10}
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
 echo "Extract and move to /usr/local/bin..."
-tar xf "gleam-v${version_5}-${arch_7}-unknown-linux-musl.tar.gz"
+tar -xf "amber-linux-musl-${arch_8}.tar.xz"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-file_chmod__45_v0 "gleam" "+x"
+file_chmod__45_v0 "amber" "+x"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-mv "gleam" "/usr/local/bin/"
+mv "amber" "/usr/local/bin/"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
@@ -302,7 +298,7 @@ __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-rm -rf /tmp/gleam-feature
+rm -rf /tmp/amber-feature
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"

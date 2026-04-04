@@ -17,8 +17,14 @@ Gleam is a friendly language for building type-safe systems that scale!
 |-----|-----|-----|-----|
 | version | The version of Gleam to install. Use 'latest' to install the latest version. | string | latest |
 
+## Customizations
+
+### VS Code Extensions
+
+- `gleam.gleam`
+
 
 
 ---
 
-_Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/NicoVIII/devcontainer-features/blob/main/src/gleam/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
+_Note: This file was auto-generated from the [devcontainer-feature.json](devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
