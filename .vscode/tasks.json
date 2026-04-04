@@ -4,9 +4,15 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Check",
+            "type": "shell",
+            "command": "find ./lib -name \"*.ab\" -print -exec amber check {} \\; && find ./src -name \"*.ab\" -print -exec amber check {} \\;",
+            "problemMatcher": [ ]
+        },
+        {
             "label": "Build",
             "type": "shell",
-            "command": "find -name \"*.ab\" -exec amber build {} \\;",
+            "command": "find ./src -name \"*.ab\" -print -exec amber build {} \\;",
             "group": {
                 "kind": "build",
                 "isDefault": true

@@ -1,0 +1,44 @@
+import { echo_error, env_var_set } from "std/env"
+
+fun ensure_run_as_root(): Null? {
+    const id = $ id -u $?
+    if id != "0" {
+        echo_error("This script must be run as root")
+        fail 1
+    }
+}
+
+pub fun clean_up(): Null? {
+    $ rm -rf /var/lib/apt/lists/* $?
+}
+
+pub fun get_architecture(): Text? {
+    const arch = $ dpkg --print-architecture $?
+    if {
+        arch == "amd64": return "x86_64"
+        arch == "arm64": return "aarch64"
+        else {
+            echo_error("Unsupported architecture: {arch}")
+            fail 1
+        }
+    }
+}
+
+pub fun ensure_packages(packages: [Text]): Null? {
+    // Check if packages are already installed
+    $ dpkg -s {packages} > /dev/null 2>&1 $ failed {
+        // At least some packages are missing
+        // We first check, if we need an update
+        if $ find /var/lib/apt/lists/* | wc -l $? == "0" {
+            echo "Running apt-get update..."
+            $ apt-get update -y $?
+        }
+        $ apt-get -y install --no-install-recommends {packages} $?
+    }
+}
+
+pub fun prepare(): Null? {
+    ensure_run_as_root()?
+    clean_up()?
+    env_var_set("DEBIAN_FRONTEND", "noninteractive")?
+}

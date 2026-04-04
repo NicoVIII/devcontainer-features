@@ -104,7 +104,6 @@ echo_error__117_v0() {
     fi
 }
 
-# Lib
 ensure_run_as_root__124_v0() {
     command_5="$(id -u)"
     __status=$?
@@ -182,16 +181,30 @@ ensure_packages__127_v0() {
     fi
 }
 
-# Specific
+prepare__128_v0() {
+    ensure_run_as_root__124_v0 
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_prepare128_v0=''
+        return "${__status}"
+    fi
+    clean_up__125_v0 
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_prepare128_v0=''
+        return "${__status}"
+    fi
+    env_var_set__98_v0 "DEBIAN_FRONTEND" "noninteractive"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_prepare128_v0=''
+        return "${__status}"
+    fi
+}
+
 # Config
 needed_packages_3=("ca-certificates" "wget")
-# Preparations
-ensure_run_as_root__124_v0 
-__status=$?
-if [ "${__status}" != 0 ]; then
-    exit "${__status}"
-fi
-clean_up__125_v0 
+prepare__128_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
@@ -211,11 +224,6 @@ if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
 cd "/tmp/gleam-feature" || exit
-env_var_set__98_v0 "DEBIAN_FRONTEND" "noninteractive"
-__status=$?
-if [ "${__status}" != 0 ]; then
-    exit "${__status}"
-fi
 get_architecture__126_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
@@ -245,8 +253,8 @@ else
 fi
 # Remove leading "v" if present
 starts_with__23_v0 "${version_5}" "v"
-ret_starts_with23_v0__72_8="${ret_starts_with23_v0}"
-if [ "${ret_starts_with23_v0__72_8}" != 0 ]; then
+ret_starts_with23_v0__30_8="${ret_starts_with23_v0}"
+if [ "${ret_starts_with23_v0__30_8}" != 0 ]; then
     slice__25_v0 "${version_5}" 1 0
     version_5="${ret_slice25_v0}"
 fi
