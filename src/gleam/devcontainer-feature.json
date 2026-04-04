@@ -14,5 +14,12 @@
             ],
             "default": "latest"
         }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "gleam.gleam"
+            ]
+        }
     }
 }
