@@ -1,0 +1,93 @@
+import { file_chmod } from "std/fs"
+import { env_var_get, env_var_set, echo_error } from "std/env"
+import { starts_with, slice } from "std/text"
+
+// Lib
+fun ensure_run_as_root(): Null? {
+    const id = $ id -u $?
+    if id != "0" {
+        echo_error("This script must be run as root")
+        fail 1
+    }
+}
+
+fun clean_up(): Null? {
+    $ rm -rf /var/lib/apt/lists/* $?
+}
+
+fun get_architecture(): Text? {
+    const arch = $ dpkg --print-architecture $?
+    if {
+        arch == "amd64": return "x86_64"
+        arch == "arm64": return "aarch64"
+        else {
+            echo_error("Unsupported architecture: {arch}")
+            fail 1
+        }
+    }
+}
+
+fun ensure_packages(packages: [Text]): Null? {
+    // Check if packages are already installed
+    $ dpkg -s {packages} > /dev/null 2>&1 $ failed {
+        // At least some packages are missing
+        // We first check, if we need an update
+        if $ find /var/lib/apt/lists/* | wc -l $? == "0" {
+            echo "Running apt-get update..."
+            $ apt-get update -y $?
+        }
+        $ apt-get -y install --no-install-recommends {packages} $?
+    }
+}
+
+// Specific
+
+// Config
+const needed_packages = ["ca-certificates", "wget"]
+
+main {
+    // Preparations
+    ensure_run_as_root()?
+    clean_up()?
+
+    // Read params
+    let version = env_var_get("VERSION") failed { "latest" }
+
+    // Use tmp directory for installation
+    echo "Change into tmp directory"
+    $ mkdir -p /tmp/gleam-feature $?
+    cd "/tmp/gleam-feature"
+
+    env_var_set("DEBIAN_FRONTEND", "noninteractive")?
+    const arch = get_architecture()?
+
+    if version == "latest" {
+        ensure_packages(needed_packages + ["jq", "curl"])?
+        version = $ curl -sL https://api.github.com/repos/gleam-lang/gleam/releases/latest | jq -r .tag_name $?
+    } else {
+        ensure_packages(needed_packages)?
+    }
+
+    // Remove leading "v" if present
+    if starts_with(version, "v") {
+        version = slice(version, 1)
+    }
+
+    const url = "https://github.com/gleam-lang/gleam/releases/download/v{version}/gleam-v{version}-{arch}-unknown-linux-musl.tar.gz"
+
+    echo "Downloading Gleam {version} for {arch} from {url}..."
+    $ wget -qO "gleam-v{version}-{arch}-unknown-linux-musl.tar.gz" {url} $?
+    echo "Checking sha256sum..."
+    $ wget -qO- "{url}.sha256" | sha256sum -c - $?
+    echo "Extract and move to /usr/local/bin..."
+    $ tar xf "gleam-v{version}-{arch}-unknown-linux-musl.tar.gz" $?
+    file_chmod("gleam", "+x")?
+    mv "gleam" "/usr/local/bin/"?
+
+    // Clean up
+    cd "-"
+    clean_up()?
+    $ rm -rf /tmp/gleam-feature $?
+
+    echo "Done!"
+}
