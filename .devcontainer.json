@@ -4,6 +4,9 @@
         "ghcr.io/devcontainers/features/node:1": { },
         "ghcr.io/devcontainers/features/docker-in-docker:2": {
             "disableIp6tables": true
+        },
+        "ghcr.io/NicoVIII/devcontainer-features/amber:0": {
+            "version": "0.5.1-alpha"
         }
     },
     "postCreateCommand": "sudo update-alternatives --set iptables /usr/sbin/iptables-nft && npm install -g @devcontainers/cli",
@@ -11,8 +14,7 @@
         "vscode": {
             "extensions": [
                 "editorconfig.editorconfig",
-                "mads-hartmann.bash-ide-vscode",
-                "ph0enixkm.amber-language"
+                "mads-hartmann.bash-ide-vscode"
             ]
         }
     }
