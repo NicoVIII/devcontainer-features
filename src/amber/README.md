@@ -21,7 +21,7 @@ A language compiled to Bash. A modern, type-safe programming language that catch
 
 ### VS Code Extensions
 
-- `ph0enixkm.amber-language`
+- `amber-lsp-publisher.amber-lsp`
 
 
 

@@ -1,7 +1,7 @@
 {
     "name": "Amber (via GitHub Releases)",
     "id": "amber",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "A language compiled to Bash. A modern, type-safe programming language that catches bugs and errors at compile time.",
     "documentationURL": "https://github.com/NicoVIII/devcontainer-features/tree/main/src/amber",
     "options": {
@@ -18,7 +18,7 @@
     "customizations": {
         "vscode": {
             "extensions": [
-                "ph0enixkm.amber-language"
+                "amber-lsp-publisher.amber-lsp"
             ]
         }
     }
