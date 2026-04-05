@@ -1,50 +1,56 @@
-import { file_chmod } from "std/fs"
-import { starts_with, slice } from "std/text"
-import { prepare, clean_up, get_architecture, ensure_packages, read_param } from "../../lib/lib.ab"
+import {
+    prepare,
+    get_architecture,
+    ensure_packages,
+    read_param,
+    fetch_latest_version,
+    normalize_version,
+    download_file,
+    verify_sha256,
+    extract_archive,
+    install_binary,
+    cleanup_temp_dir,
+} from "../../lib/lib.ab"
 
 // Config
-const needed_packages = ["ca-certificates", "wget"]
+const BINARY_NAME = "gleam"
+const REPO_OWNER = "gleam-lang"
+const REPO_NAME = "gleam"
+const base_packages = ["ca-certificates", "wget"]
 
 main {
     prepare()?
 
-    // Read params
+    // Read parameters
     let version = read_param("VERSION", "latest")
 
-    // Use tmp directory for installation
-    echo "Change into tmp directory"
-    $ mkdir -p /tmp/gleam-feature $?
-    cd "/tmp/gleam-feature"
+    // Ensure necessary packages
+    if version == "latest" {
+        ensure_packages(base_packages + ["jq", "curl"])?
+        version = fetch_latest_version(REPO_OWNER, REPO_NAME)?
+    } else {
+        ensure_packages(base_packages)?
+    }
+
+    version = normalize_version(version)
+
+    // Setup temporary directory
+    const temp_dir = "/tmp/gleam-feature"
+    echo "Preparing installation in {temp_dir}..."
+    $ mkdir -p {temp_dir} $?
+    cd temp_dir
 
     const arch = get_architecture()?
+    const filename = "{BINARY_NAME}-v{version}-{arch}-unknown-linux-musl.tar.gz"
+    const url = "https://github.com/{REPO_OWNER}/{REPO_NAME}/releases/download/v{version}/{filename}"
 
-    if version == "latest" {
-        ensure_packages(needed_packages + ["jq", "curl"])?
-        version = $ curl -sL https://api.github.com/repos/gleam-lang/gleam/releases/latest | jq -r .tag_name $?
-    } else {
-        ensure_packages(needed_packages)?
-    }
-
-    // Remove leading "v" if present
-    if starts_with(version, "v") {
-        version = slice(version, 1)
-    }
-
-    const url = "https://github.com/gleam-lang/gleam/releases/download/v{version}/gleam-v{version}-{arch}-unknown-linux-musl.tar.gz"
-
-    echo "Downloading Gleam {version} for {arch} from {url}..."
-    $ wget -qO "gleam-v{version}-{arch}-unknown-linux-musl.tar.gz" {url} $?
-    echo "Checking sha256sum..."
-    $ wget -qO- "{url}.sha256" | sha256sum -c - $?
-    echo "Extract and move to /usr/local/bin..."
-    $ tar xf "gleam-v{version}-{arch}-unknown-linux-musl.tar.gz" $?
-    file_chmod("gleam", "+x")?
-    mv "gleam" "/usr/local/bin/"?
+    echo "Installing {BINARY_NAME} {version}..."
+    download_file(url, filename)?
+    verify_sha256(url)?
+    extract_archive(filename)?
+    install_binary(BINARY_NAME, "/usr/local/bin")?
 
     // Clean up
-    cd "-"
-    clean_up()?
-    $ rm -rf /tmp/gleam-feature $?
-
+    cleanup_temp_dir(temp_dir)?
     echo "Done!"
 }

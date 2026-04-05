@@ -10,8 +10,8 @@ starts_with__23_v0() {
     echo 1
   fi)"
     __status=$?
-    result_9="${command_0}"
-    ret_starts_with23_v0="$([ "_${result_9}" != "_1" ]; echo $?)"
+    result_11="${command_0}"
+    ret_starts_with23_v0="$([ "_${result_11}" != "_1" ]; echo $?)"
     return 0
 }
 
@@ -61,30 +61,30 @@ file_chmod__45_v0() {
     return 1
 }
 
-env_var_set__100_v0() {
+env_var_set__97_v0() {
     local name=$1
     local val=$2
     export $name="$val" 2> /dev/null
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_env_var_set100_v0=''
+        ret_env_var_set97_v0=''
         return "${__status}"
     fi
 }
 
-env_var_get__101_v0() {
+env_var_get__98_v0() {
     local name=$1
     command_3="$(echo ${!name})"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_env_var_get101_v0=''
+        ret_env_var_get98_v0=''
         return "${__status}"
     fi
-    ret_env_var_get101_v0="${command_3}"
+    ret_env_var_get98_v0="${command_3}"
     return 0
 }
 
-printf__109_v0() {
+printf__106_v0() {
     local format=$1
     local args=("${!2}")
     args=("${format}" "${args[@]}")
@@ -93,11 +93,11 @@ printf__109_v0() {
     __status=$?
 }
 
-echo_error__119_v0() {
+echo_error__116_v0() {
     local message=$1
     local exit_code=$2
     array_4=("${message}")
-    printf__109_v0 "\\x1b[1;3;97;41m%s\\x1b[0m
+    printf__106_v0 "\\x1b[1;3;97;41m%s\\x1b[0m
 " array_4[@]
     if [ "$(( ${exit_code} > 0 ))" != 0 ]; then
         exit "${exit_code}"
@@ -111,9 +111,9 @@ ensure_run_as_root__124_v0() {
         ret_ensure_run_as_root124_v0=''
         return "${__status}"
     fi
-    id_5="${command_5}"
-    if [ "$([ "_${id_5}" == "_0" ]; echo $?)" != 0 ]; then
-        echo_error__119_v0 "This script must be run as root" 1
+    id_8="${command_5}"
+    if [ "$([ "_${id_8}" == "_0" ]; echo $?)" != 0 ]; then
+        echo_error__116_v0 "This script must be run as root" 1
         ret_ensure_run_as_root124_v0=''
         return 1
     fi
@@ -135,15 +135,15 @@ get_architecture__126_v0() {
         ret_get_architecture126_v0=''
         return "${__status}"
     fi
-    arch_7="${command_6}"
-    if [ "$([ "_${arch_7}" != "_amd64" ]; echo $?)" != 0 ]; then
+    arch_13="${command_6}"
+    if [ "$([ "_${arch_13}" != "_amd64" ]; echo $?)" != 0 ]; then
         ret_get_architecture126_v0="x86_64"
         return 0
-    elif [ "$([ "_${arch_7}" != "_arm64" ]; echo $?)" != 0 ]; then
+    elif [ "$([ "_${arch_13}" != "_arm64" ]; echo $?)" != 0 ]; then
         ret_get_architecture126_v0="aarch64"
         return 0
     else
-        echo_error__119_v0 "Unsupported architecture: ${arch_7}" 1
+        echo_error__116_v0 "Unsupported architecture: ${arch_13}" 1
         ret_get_architecture126_v0=''
         return 1
     fi
@@ -194,7 +194,7 @@ prepare__128_v0() {
         ret_prepare128_v0=''
         return "${__status}"
     fi
-    env_var_set__100_v0 "DEBIAN_FRONTEND" "noninteractive"
+    env_var_set__97_v0 "DEBIAN_FRONTEND" "noninteractive"
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_prepare128_v0=''
@@ -205,100 +205,175 @@ prepare__128_v0() {
 read_param__129_v0() {
     local name=$1
     local default=$2
-    env_var_get__101_v0 "${name}"
+    env_var_get__98_v0 "${name}"
     __status=$?
     if [ "${__status}" != 0 ]; then
         :
     fi
-    ret_read_param129_v0="${ret_env_var_get101_v0}"
+    ret_read_param129_v0="${ret_env_var_get98_v0}"
     return 0
 }
 
+fetch_latest_version__130_v0() {
+    local repo_owner=$1
+    local repo_name=$2
+    url_10="https://api.github.com/repos/${repo_owner}/${repo_name}/releases/latest"
+    command_8="$(curl -sL ${url_10} | jq -r .tag_name)"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_fetch_latest_version130_v0=''
+        return "${__status}"
+    fi
+    ret_fetch_latest_version130_v0="${command_8}"
+    return 0
+}
+
+normalize_version__131_v0() {
+    local version=$1
+    starts_with__23_v0 "${version}" "v"
+    ret_starts_with23_v0__66_8="${ret_starts_with23_v0}"
+    if [ "${ret_starts_with23_v0__66_8}" != 0 ]; then
+        slice__25_v0 "${version}" 1 0
+        ret_normalize_version131_v0="${ret_slice25_v0}"
+        return 0
+    fi
+    ret_normalize_version131_v0="${version}"
+    return 0
+}
+
+download_file__132_v0() {
+    local url=$1
+    local local_filename=$2
+    echo "Downloading from ${url}..."
+    wget -qO ${local_filename} ${url}
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_download_file132_v0=''
+        return "${__status}"
+    fi
+}
+
+extract_archive__134_v0() {
+    local filename=$1
+    echo "Extracting ${filename}..."
+    tar -xf ${filename}
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_extract_archive134_v0=''
+        return "${__status}"
+    fi
+}
+
+install_binary__135_v0() {
+    local binary_name=$1
+    local install_dir=$2
+    echo "Installing ${binary_name} to ${install_dir}..."
+    file_chmod__45_v0 "${binary_name}" "+x"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_install_binary135_v0=''
+        return "${__status}"
+    fi
+    mv "${binary_name}" "${install_dir}/${binary_name}"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_install_binary135_v0=''
+        return "${__status}"
+    fi
+}
+
+cleanup_temp_dir__136_v0() {
+    local temp_dir=$1
+    cd "-" || exit
+    clean_up__125_v0 
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_cleanup_temp_dir136_v0=''
+        return "${__status}"
+    fi
+    rm -rf ${temp_dir}
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_cleanup_temp_dir136_v0=''
+        return "${__status}"
+    fi
+}
+
 # Config
-dependencies_3=("bc")
-array_9=("ca-certificates" "wget" "xz-utils")
-needed_packages_4=("${dependencies_3[@]}" "${array_9[@]}")
+__BINARY_NAME_3="amber"
+__REPO_OWNER_4="amber-lang"
+__REPO_NAME_5="amber"
+dependencies_6=("bc")
+base_packages_7=("ca-certificates" "wget" "xz-utils")
 prepare__128_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-# Read params
+# Read parameters
 read_param__129_v0 "VERSION" "latest"
-version_6="${ret_read_param129_v0}"
-# Use tmp directory for installation
-echo "Change into tmp directory"
-mkdir -p /tmp/amber-feature
+version_9="${ret_read_param129_v0}"
+# Ensure necessary packages
+if [ "$([ "_${version_9}" != "_latest" ]; echo $?)" != 0 ]; then
+    array_add_12=("${base_packages_7[@]}" "${dependencies_6[@]}")
+    array_13=("jq" "curl")
+    array_add_14=("${array_add_12[@]}" "${array_13[@]}")
+    ensure_packages__127_v0 array_add_14[@]
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        exit "${__status}"
+    fi
+    fetch_latest_version__130_v0 "${__REPO_OWNER_4}" "${__REPO_NAME_5}"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        exit "${__status}"
+    fi
+    version_9="${ret_fetch_latest_version130_v0}"
+else
+    array_add_15=("${base_packages_7[@]}" "${dependencies_6[@]}")
+    ensure_packages__127_v0 array_add_15[@]
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        exit "${__status}"
+    fi
+fi
+normalize_version__131_v0 "${version_9}"
+version_9="${ret_normalize_version131_v0}"
+# Setup temporary directory
+temp_dir_12="/tmp/amber-feature"
+echo "Preparing installation in ${temp_dir_12}..."
+mkdir -p ${temp_dir_12}
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-cd "/tmp/amber-feature" || exit
+cd "${temp_dir_12}" || exit
 get_architecture__126_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-arch_8="${ret_get_architecture126_v0}"
-if [ "$([ "_${version_6}" != "_latest" ]; echo $?)" != 0 ]; then
-    array_12=("jq" "curl")
-    array_add_13=("${needed_packages_4[@]}" "${array_12[@]}")
-    ensure_packages__127_v0 array_add_13[@]
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        exit "${__status}"
-    fi
-    command_14="$(curl -sL https://api.github.com/repos/amber-lang/amber/releases/latest | jq -r .tag_name)"
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        exit "${__status}"
-    fi
-    version_6="${command_14}"
-else
-    ensure_packages__127_v0 needed_packages_4[@]
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        exit "${__status}"
-    fi
-fi
-# Remove leading "v" if present
-starts_with__23_v0 "${version_6}" "v"
-ret_starts_with23_v0__30_8="${ret_starts_with23_v0}"
-if [ "${ret_starts_with23_v0__30_8}" != 0 ]; then
-    slice__25_v0 "${version_6}" 1 0
-    version_6="${ret_slice25_v0}"
-fi
-url_10="https://github.com/amber-lang/amber/releases/download/${version_6}/amber-linux-musl-${arch_8}.tar.xz"
-echo "Downloading Amber ${version_6} for ${arch_8} from ${url_10}..."
-wget -qO "amber-linux-musl-${arch_8}.tar.xz" ${url_10}
+arch_14="${ret_get_architecture126_v0}"
+filename_15="${__BINARY_NAME_3}-linux-musl-${arch_14}.tar.xz"
+url_16="https://github.com/${__REPO_OWNER_4}/${__REPO_NAME_5}/releases/download/${version_9}/${filename_15}"
+echo "Installing ${__BINARY_NAME_3} ${version_9}..."
+download_file__132_v0 "${url_16}" "${filename_15}"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-echo "Extract and move to /usr/local/bin..."
-tar -xf "amber-linux-musl-${arch_8}.tar.xz"
+extract_archive__134_v0 "${filename_15}"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-file_chmod__45_v0 "amber" "+x"
-__status=$?
-if [ "${__status}" != 0 ]; then
-    exit "${__status}"
-fi
-mv "amber" "/usr/local/bin/"
+install_binary__135_v0 "${__BINARY_NAME_3}" "/usr/local/bin"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
 # Clean up
-cd "-" || exit
-clean_up__125_v0 
-__status=$?
-if [ "${__status}" != 0 ]; then
-    exit "${__status}"
-fi
-rm -rf /tmp/amber-feature
+cleanup_temp_dir__136_v0 "${temp_dir_12}"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
