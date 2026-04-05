@@ -1,0 +1,48 @@
+name: "Check"
+permissions:
+  contents: read
+on:
+  push:
+    paths:
+      - ".github/workflows/docs-check.yml"
+      - "lib/**"
+      - "src/**"
+  pull_request:
+    paths:
+      - ".github/workflows/docs-check.yml"
+      - "lib/**"
+      - "src/**"
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Amber
+        uses: lens0021/setup-amber@v2
+        with:
+          amber-version: 0.5.1-alpha
+
+      - run: npm install -g @devcontainers/cli
+        name: Install devcontainer CLI
+
+      - name: Check Amber library
+        run: find ./lib -name "*.ab" -print -exec amber check {} \;
+
+      - name: Build Amber feature install scripts
+        run: find ./src -name "install.ab" -print -exec amber build {} \;
+
+      - name: Generate documentation
+        run: |
+          (cd ./src && devcontainer features generate-docs -n "NicoVIII/devcontainer-features")
+
+      - name: Check for repository changes
+        run: |
+          if [ -z "$(git status --porcelain=v1)" ]; then
+            echo "Generated documentation and Amber artifacts are up to date."
+          else
+            echo "Changes detected after Amber checks/builds or documentation generation:"
+            git status --porcelain=v1
+            echo "Please run Amber validation/build and documentation generation locally, then commit the changes."
+            exit 1
+          fi
