@@ -20,4 +20,5 @@ Initial release - supports version property including "latest"
 [semantic versioning]: https://semver.org/spec/v2.0.0.html
 
 <!-- Versions -->
+[0.1.1]: https://github.com/NicoVIII/devcontainer-features/compare/amber-v0.1.0...amber-v0.1.1
 [0.1.0]: https://github.com/NicoVIII/devcontainer-features/releases/tag/amber-v0.1.0

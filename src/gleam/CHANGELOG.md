@@ -20,5 +20,5 @@ Initial release - supports version property including "latest"
 [semantic versioning]: https://semver.org/spec/v2.0.0.html
 
 <!-- Versions -->
-[0.2.0]: https://github.com/NicoVIII/devcontainer-features/compare/v0.1.0...v0.2.0
+[0.2.0]: https://github.com/NicoVIII/devcontainer-features/compare/gleam-v0.1.0...gleam-v0.2.0
 [0.1.0]: https://github.com/NicoVIII/devcontainer-features/releases/tag/gleam-v0.1.0
