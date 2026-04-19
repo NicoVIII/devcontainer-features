@@ -1,16 +1,9 @@
-import {
-    prepare,
-    get_architecture,
-    ensure_packages,
-    read_param,
-    fetch_latest_version,
-    normalize_version,
-    download_file,
-    verify_sha256,
-    extract_archive,
-    install_binary,
-    cleanup_temp_dir,
-} from "../../lib/lib.ab"
+import { prepare } from "../../lib/core.ab"
+import { get_architecture, ensure_packages } from "../../lib/system.ab"
+import { read_param } from "../../lib/params.ab"
+import { fetch_latest_version, normalize_version, download_file } from "../../lib/download.ab"
+import { verify_sha256 } from "../../lib/verify.ab"
+import { extract_archive, install_binary, cleanup_temp_dir } from "../../lib/install.ab"
 
 // Config
 const BINARY_NAME = "gleam"

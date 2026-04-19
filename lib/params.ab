@@ -1,0 +1,6 @@
+import { env_var_get } from "std/env"
+
+/// Retrieves an environment variable or returns a default value
+pub fun read_param(name: Text, default: Text): Text {
+    return env_var_get(name) failed { default }
+}

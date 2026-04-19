@@ -1,0 +1,28 @@
+import { echo_error } from "std/env"
+
+/// Maps Debian architecture names to standard architecture names
+pub fun get_architecture(): Text? {
+    const arch = $ dpkg --print-architecture $?
+    if {
+        arch == "amd64": return "x86_64"
+        arch == "arm64": return "aarch64"
+        else {
+            echo_error("Unsupported architecture: {arch}")
+            fail 1
+        }
+    }
+}
+
+/// Installs packages if not already installed. Updates apt cache if needed.
+pub fun ensure_packages(packages: [Text]): Null? {
+    // Check if packages are already installed
+    $ dpkg -s {packages} > /dev/null 2>&1 $ failed {
+        // At least some packages are missing
+        // We first check, if we need an update
+        if $ find /var/lib/apt/lists/* | wc -l $? == "0" {
+            echo "Running apt-get update..."
+            $ apt-get update -y $?
+        }
+        $ apt-get -y install --no-install-recommends {packages} $?
+    }
+}

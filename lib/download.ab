@@ -1,0 +1,21 @@
+import { starts_with, slice } from "std/text"
+
+/// Fetches the latest release version from a GitHub repository API
+pub fun fetch_latest_version(repo_owner: Text, repo_name: Text): Text? {
+    const url = "https://api.github.com/repos/{repo_owner}/{repo_name}/releases/latest"
+    return $ curl -sL {url} | jq -r .tag_name $?
+}
+
+/// Normalizes version by removing leading "v" prefix if present
+pub fun normalize_version(version: Text): Text {
+    if starts_with(version, "v") {
+        return slice(version, 1)
+    }
+    return version
+}
+
+/// Downloads a file from URL to the specified local filename
+pub fun download_file(url: Text, local_filename: Text): Null? {
+    echo "Downloading from {url}..."
+    $ wget -qO {local_filename} {url} $?
+}

@@ -1,0 +1,22 @@
+import { echo_error, env_var_set } from "std/env"
+
+/// Ensures the script is running as root. Fails if not.
+fun ensure_run_as_root(): Null? {
+    const id = $ id -u $?
+    if id != "0" {
+        echo_error("This script must be run as root")
+        fail 1
+    }
+}
+
+/// Cleans up apt cache to reduce image size
+fun clean_up(): Null? {
+    $ rm -rf /var/lib/apt/lists/* $?
+}
+
+/// Prepares the system for installation: runs as root, disables interactive prompts, cleans apt cache
+pub fun prepare(): Null? {
+    ensure_run_as_root()?
+    clean_up()?
+    env_var_set("DEBIAN_FRONTEND", "noninteractive")?
+}

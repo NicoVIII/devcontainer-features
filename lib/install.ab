@@ -1,0 +1,21 @@
+import { file_chmod } from "std/fs"
+
+/// Extracts tar.xz or tar.gz archives based on file extension
+pub fun extract_archive(filename: Text): Null? {
+    echo "Extracting {filename}..."
+    $ tar -xf {filename} $?
+}
+
+/// Installs a binary by making it executable and moving it to the target directory
+pub fun install_binary(binary_name: Text, install_dir: Text): Null? {
+    echo "Installing {binary_name} to {install_dir}..."
+    file_chmod(binary_name, "+x")?
+    mv binary_name "{install_dir}/{binary_name}"?
+}
+
+/// Cleans up a temporary directory and changes back to the previous directory
+pub fun cleanup_temp_dir(temp_dir: Text): Null? {
+    cd "-"
+    $ rm -rf /var/lib/apt/lists/* $?
+    $ rm -rf {temp_dir} $?
+}

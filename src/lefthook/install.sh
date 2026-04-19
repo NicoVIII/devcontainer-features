@@ -76,52 +76,73 @@ echo_error__116_v0() {
     fi
 }
 
-ensure_run_as_root__124_v0() {
+ensure_run_as_root__120_v0() {
     command_5="$(id -u)"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_ensure_run_as_root124_v0=''
+        ret_ensure_run_as_root120_v0=''
         return "${__status}"
     fi
     id_7="${command_5}"
     if [ "$([ "_${id_7}" == "_0" ]; echo $?)" != 0 ]; then
         echo_error__116_v0 "This script must be run as root" 1
-        ret_ensure_run_as_root124_v0=''
+        ret_ensure_run_as_root120_v0=''
         return 1
     fi
 }
 
-clean_up__125_v0() {
+clean_up__121_v0() {
     rm -rf /var/lib/apt/lists/*
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_clean_up125_v0=''
+        ret_clean_up121_v0=''
         return "${__status}"
     fi
 }
 
-get_architecture__126_v0() {
+prepare__122_v0() {
+    ensure_run_as_root__120_v0 
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_prepare122_v0=''
+        return "${__status}"
+    fi
+    clean_up__121_v0 
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_prepare122_v0=''
+        return "${__status}"
+    fi
+    env_var_set__97_v0 "DEBIAN_FRONTEND" "noninteractive"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_prepare122_v0=''
+        return "${__status}"
+    fi
+}
+
+get_architecture__125_v0() {
     command_6="$(dpkg --print-architecture)"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_get_architecture126_v0=''
+        ret_get_architecture125_v0=''
         return "${__status}"
     fi
     arch_12="${command_6}"
     if [ "$([ "_${arch_12}" != "_amd64" ]; echo $?)" != 0 ]; then
-        ret_get_architecture126_v0="x86_64"
+        ret_get_architecture125_v0="x86_64"
         return 0
     elif [ "$([ "_${arch_12}" != "_arm64" ]; echo $?)" != 0 ]; then
-        ret_get_architecture126_v0="aarch64"
+        ret_get_architecture125_v0="aarch64"
         return 0
     else
         echo_error__116_v0 "Unsupported architecture: ${arch_12}" 1
-        ret_get_architecture126_v0=''
+        ret_get_architecture125_v0=''
         return 1
     fi
 }
 
-ensure_packages__127_v0() {
+ensure_packages__126_v0() {
     local packages=("${!1}")
     # Check if packages are already installed
     dpkg -s ${packages[@]} > /dev/null 2>&1
@@ -132,7 +153,7 @@ ensure_packages__127_v0() {
         command_7="$(find /var/lib/apt/lists/* | wc -l)"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_ensure_packages127_v0=''
+            ret_ensure_packages126_v0=''
             return "${__status}"
         fi
         if [ "$([ "_${command_7}" != "_0" ]; echo $?)" != 0 ]; then
@@ -140,41 +161,20 @@ ensure_packages__127_v0() {
             apt-get update -y
             __status=$?
             if [ "${__status}" != 0 ]; then
-                ret_ensure_packages127_v0=''
+                ret_ensure_packages126_v0=''
                 return "${__status}"
             fi
         fi
         apt-get -y install --no-install-recommends ${packages[@]}
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_ensure_packages127_v0=''
+            ret_ensure_packages126_v0=''
             return "${__status}"
         fi
     fi
 }
 
-prepare__128_v0() {
-    ensure_run_as_root__124_v0 
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        ret_prepare128_v0=''
-        return "${__status}"
-    fi
-    clean_up__125_v0 
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        ret_prepare128_v0=''
-        return "${__status}"
-    fi
-    env_var_set__97_v0 "DEBIAN_FRONTEND" "noninteractive"
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        ret_prepare128_v0=''
-        return "${__status}"
-    fi
-}
-
-read_param__129_v0() {
+read_param__130_v0() {
     local name=$1
     local default=$2
     env_var_get__98_v0 "${name}"
@@ -182,103 +182,115 @@ read_param__129_v0() {
     if [ "${__status}" != 0 ]; then
         :
     fi
-    ret_read_param129_v0="${ret_env_var_get98_v0}"
+    ret_read_param130_v0="${ret_env_var_get98_v0}"
     return 0
 }
 
-fetch_latest_version__130_v0() {
+fetch_latest_version__134_v0() {
     local repo_owner=$1
     local repo_name=$2
     url_9="https://api.github.com/repos/${repo_owner}/${repo_name}/releases/latest"
     command_8="$(curl -sL ${url_9} | jq -r .tag_name)"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_fetch_latest_version130_v0=''
+        ret_fetch_latest_version134_v0=''
         return "${__status}"
     fi
-    ret_fetch_latest_version130_v0="${command_8}"
+    ret_fetch_latest_version134_v0="${command_8}"
     return 0
 }
 
-normalize_version__131_v0() {
+normalize_version__135_v0() {
     local version=$1
     starts_with__23_v0 "${version}" "v"
-    ret_starts_with23_v0__66_8="${ret_starts_with23_v0}"
-    if [ "${ret_starts_with23_v0__66_8}" != 0 ]; then
+    ret_starts_with23_v0__11_8="${ret_starts_with23_v0}"
+    if [ "${ret_starts_with23_v0__11_8}" != 0 ]; then
         slice__25_v0 "${version}" 1 0
-        ret_normalize_version131_v0="${ret_slice25_v0}"
+        ret_normalize_version135_v0="${ret_slice25_v0}"
         return 0
     fi
-    ret_normalize_version131_v0="${version}"
+    ret_normalize_version135_v0="${version}"
     return 0
 }
 
-download_file__132_v0() {
+download_file__136_v0() {
     local url=$1
     local local_filename=$2
     echo "Downloading from ${url}..."
     wget -qO ${local_filename} ${url}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_download_file132_v0=''
+        ret_download_file136_v0=''
         return "${__status}"
     fi
 }
 
-verify_sha256_from_manifest__134_v0() {
+download_file__145_v0() {
+    local url=$1
+    local local_filename=$2
+    echo "Downloading from ${url}..."
+    wget -qO ${local_filename} ${url}
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_download_file145_v0=''
+        return "${__status}"
+    fi
+}
+
+verify_sha256_from_manifest__148_v0() {
     local checksum_url=$1
     local artifact_name=$2
     echo "Checking sha256sum..."
     manifest_filename_17=".checksum-manifest"
     entry_filename_18=".checksum-entry"
-    download_file__132_v0 "${checksum_url}" "${manifest_filename_17}"
+    download_file__145_v0 "${checksum_url}" "${manifest_filename_17}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_verify_sha256_from_manifest134_v0=''
+        ret_verify_sha256_from_manifest148_v0=''
         return "${__status}"
     fi
     command_9="$(grep -F "  ${artifact_name}" ${manifest_filename_17} | grep -Fv "  ${artifact_name}.gz" || true)"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_verify_sha256_from_manifest134_v0=''
+        ret_verify_sha256_from_manifest148_v0=''
         return "${__status}"
     fi
     checksum_entries_19="${command_9}"
     command_10="$(printf "%s" "${checksum_entries_19}" | grep -c . || true)"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_verify_sha256_from_manifest134_v0=''
+        ret_verify_sha256_from_manifest148_v0=''
         return "${__status}"
     fi
     match_count_20="${command_10}"
     if [ "$([ "_${match_count_20}" == "_1" ]; echo $?)" != 0 ]; then
         echo_error__116_v0 "Checksum manifest must contain exactly one entry for ${artifact_name}" 1
-        ret_verify_sha256_from_manifest134_v0=''
+        ret_verify_sha256_from_manifest148_v0=''
         return 1
     fi
     printf "%s
 " "${checksum_entries_19}" > ${entry_filename_18}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_verify_sha256_from_manifest134_v0=''
+        ret_verify_sha256_from_manifest148_v0=''
         return "${__status}"
     fi
     sha256sum -c ${entry_filename_18}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_verify_sha256_from_manifest134_v0=''
+        ret_verify_sha256_from_manifest148_v0=''
         return "${__status}"
     fi
     rm -f ${entry_filename_18}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_verify_sha256_from_manifest134_v0=''
+        ret_verify_sha256_from_manifest148_v0=''
         return "${__status}"
     fi
     rm -f ${manifest_filename_17}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_verify_sha256_from_manifest134_v0=''
+        ret_verify_sha256_from_manifest148_v0=''
         return "${__status}"
     fi
 }
@@ -288,38 +300,38 @@ __BINARY_NAME_3="lefthook"
 __REPO_OWNER_4="evilmartians"
 __REPO_NAME_5="lefthook"
 base_packages_6=("ca-certificates" "wget")
-prepare__128_v0 
+prepare__122_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
 # Read parameters
-read_param__129_v0 "VERSION" "latest"
-version_8="${ret_read_param129_v0}"
+read_param__130_v0 "VERSION" "latest"
+version_8="${ret_read_param130_v0}"
 # Ensure necessary packages
 if [ "$([ "_${version_8}" != "_latest" ]; echo $?)" != 0 ]; then
     array_13=("jq" "curl")
     array_add_14=("${base_packages_6[@]}" "${array_13[@]}")
-    ensure_packages__127_v0 array_add_14[@]
+    ensure_packages__126_v0 array_add_14[@]
     __status=$?
     if [ "${__status}" != 0 ]; then
         exit "${__status}"
     fi
-    fetch_latest_version__130_v0 "${__REPO_OWNER_4}" "${__REPO_NAME_5}"
+    fetch_latest_version__134_v0 "${__REPO_OWNER_4}" "${__REPO_NAME_5}"
     __status=$?
     if [ "${__status}" != 0 ]; then
         exit "${__status}"
     fi
-    version_8="${ret_fetch_latest_version130_v0}"
+    version_8="${ret_fetch_latest_version134_v0}"
 else
-    ensure_packages__127_v0 base_packages_6[@]
+    ensure_packages__126_v0 base_packages_6[@]
     __status=$?
     if [ "${__status}" != 0 ]; then
         exit "${__status}"
     fi
 fi
-normalize_version__131_v0 "${version_8}"
-version_8="${ret_normalize_version131_v0}"
+normalize_version__135_v0 "${version_8}"
+version_8="${ret_normalize_version135_v0}"
 # Setup temporary directory
 temp_dir_11="/tmp/lefthook-feature"
 echo "Preparing installation in ${temp_dir_11}..."
@@ -329,22 +341,22 @@ if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
 cd "${temp_dir_11}" || exit
-get_architecture__126_v0 
+get_architecture__125_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-arch_13="${ret_get_architecture126_v0}"
+arch_13="${ret_get_architecture125_v0}"
 filename_14="${__BINARY_NAME_3}_${version_8}_Linux_${arch_13}"
 release_url_15="https://github.com/${__REPO_OWNER_4}/${__REPO_NAME_5}/releases/download/v${version_8}"
 url_16="${release_url_15}/${filename_14}"
 echo "Installing ${__BINARY_NAME_3} ${version_8}..."
-download_file__132_v0 "${url_16}" "${filename_14}"
+download_file__136_v0 "${url_16}" "${filename_14}"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-verify_sha256_from_manifest__134_v0 "${release_url_15}/${__BINARY_NAME_3}_checksums.txt" "${filename_14}"
+verify_sha256_from_manifest__148_v0 "${release_url_15}/${__BINARY_NAME_3}_checksums.txt" "${filename_14}"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
