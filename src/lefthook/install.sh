@@ -10,8 +10,8 @@ starts_with__23_v0() {
     echo 1
   fi)"
     __status=$?
-    result_11="${command_0}"
-    ret_starts_with23_v0="$([ "_${result_11}" != "_1" ]; echo $?)"
+    result_10="${command_0}"
+    ret_starts_with23_v0="$([ "_${result_10}" != "_1" ]; echo $?)"
     return 0
 }
 
@@ -31,34 +31,6 @@ slice__25_v0() {
     __status=$?
     ret_slice25_v0="${command_2}"
     return 0
-}
-
-file_exists__37_v0() {
-    local path=$1
-    [ -f "${path}" ]
-    __status=$?
-    ret_file_exists37_v0="$(( ${__status} == 0 ))"
-    return 0
-}
-
-file_chmod__45_v0() {
-    local path=$1
-    local mode=$2
-    file_exists__37_v0 "${path}"
-    ret_file_exists37_v0__153_8="${ret_file_exists37_v0}"
-    if [ "${ret_file_exists37_v0__153_8}" != 0 ]; then
-        chmod "${mode}" "${path}"
-        __status=$?
-        if [ "${__status}" != 0 ]; then
-            ret_file_chmod45_v0=''
-            return "${__status}"
-        fi
-        ret_file_chmod45_v0=''
-        return 0
-    fi
-    echo "The file ${path} doesn't exist"'!'""
-    ret_file_chmod45_v0=''
-    return 1
 }
 
 env_var_set__97_v0() {
@@ -111,8 +83,8 @@ ensure_run_as_root__124_v0() {
         ret_ensure_run_as_root124_v0=''
         return "${__status}"
     fi
-    id_8="${command_5}"
-    if [ "$([ "_${id_8}" == "_0" ]; echo $?)" != 0 ]; then
+    id_7="${command_5}"
+    if [ "$([ "_${id_7}" == "_0" ]; echo $?)" != 0 ]; then
         echo_error__116_v0 "This script must be run as root" 1
         ret_ensure_run_as_root124_v0=''
         return 1
@@ -135,15 +107,15 @@ get_architecture__126_v0() {
         ret_get_architecture126_v0=''
         return "${__status}"
     fi
-    arch_13="${command_6}"
-    if [ "$([ "_${arch_13}" != "_amd64" ]; echo $?)" != 0 ]; then
+    arch_12="${command_6}"
+    if [ "$([ "_${arch_12}" != "_amd64" ]; echo $?)" != 0 ]; then
         ret_get_architecture126_v0="x86_64"
         return 0
-    elif [ "$([ "_${arch_13}" != "_arm64" ]; echo $?)" != 0 ]; then
+    elif [ "$([ "_${arch_12}" != "_arm64" ]; echo $?)" != 0 ]; then
         ret_get_architecture126_v0="aarch64"
         return 0
     else
-        echo_error__116_v0 "Unsupported architecture: ${arch_13}" 1
+        echo_error__116_v0 "Unsupported architecture: ${arch_12}" 1
         ret_get_architecture126_v0=''
         return 1
     fi
@@ -217,8 +189,8 @@ read_param__129_v0() {
 fetch_latest_version__130_v0() {
     local repo_owner=$1
     local repo_name=$2
-    url_10="https://api.github.com/repos/${repo_owner}/${repo_name}/releases/latest"
-    command_8="$(curl -sL ${url_10} | jq -r .tag_name)"
+    url_9="https://api.github.com/repos/${repo_owner}/${repo_name}/releases/latest"
+    command_8="$(curl -sL ${url_9} | jq -r .tag_name)"
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_fetch_latest_version130_v0=''
@@ -253,58 +225,69 @@ download_file__132_v0() {
     fi
 }
 
-extract_archive__135_v0() {
-    local filename=$1
-    echo "Extracting ${filename}..."
-    tar -xf ${filename}
+verify_sha256_from_manifest__134_v0() {
+    local checksum_url=$1
+    local artifact_name=$2
+    echo "Checking sha256sum..."
+    manifest_filename_17=".checksum-manifest"
+    entry_filename_18=".checksum-entry"
+    download_file__132_v0 "${checksum_url}" "${manifest_filename_17}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_extract_archive135_v0=''
+        ret_verify_sha256_from_manifest134_v0=''
         return "${__status}"
     fi
-}
-
-install_binary__136_v0() {
-    local binary_name=$1
-    local install_dir=$2
-    echo "Installing ${binary_name} to ${install_dir}..."
-    file_chmod__45_v0 "${binary_name}" "+x"
+    command_9="$(grep -F "  ${artifact_name}" ${manifest_filename_17} | grep -Fv "  ${artifact_name}.gz" || true)"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_binary136_v0=''
+        ret_verify_sha256_from_manifest134_v0=''
         return "${__status}"
     fi
-    mv "${binary_name}" "${install_dir}/${binary_name}"
+    checksum_entries_19="${command_9}"
+    command_10="$(printf "%s" "${checksum_entries_19}" | grep -c . || true)"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_binary136_v0=''
+        ret_verify_sha256_from_manifest134_v0=''
         return "${__status}"
     fi
-}
-
-cleanup_temp_dir__137_v0() {
-    local temp_dir=$1
-    cd "-" || exit
-    clean_up__125_v0 
+    match_count_20="${command_10}"
+    if [ "$([ "_${match_count_20}" == "_1" ]; echo $?)" != 0 ]; then
+        echo_error__116_v0 "Checksum manifest must contain exactly one entry for ${artifact_name}" 1
+        ret_verify_sha256_from_manifest134_v0=''
+        return 1
+    fi
+    printf "%s
+" "${checksum_entries_19}" > ${entry_filename_18}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cleanup_temp_dir137_v0=''
+        ret_verify_sha256_from_manifest134_v0=''
         return "${__status}"
     fi
-    rm -rf ${temp_dir}
+    sha256sum -c ${entry_filename_18}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cleanup_temp_dir137_v0=''
+        ret_verify_sha256_from_manifest134_v0=''
+        return "${__status}"
+    fi
+    rm -f ${entry_filename_18}
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_verify_sha256_from_manifest134_v0=''
+        return "${__status}"
+    fi
+    rm -f ${manifest_filename_17}
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_verify_sha256_from_manifest134_v0=''
         return "${__status}"
     fi
 }
 
 # Config
-__BINARY_NAME_3="amber"
-__REPO_OWNER_4="amber-lang"
-__REPO_NAME_5="amber"
-dependencies_6=("bc")
-base_packages_7=("ca-certificates" "wget" "xz-utils")
+__BINARY_NAME_3="lefthook"
+__REPO_OWNER_4="evilmartians"
+__REPO_NAME_5="lefthook"
+base_packages_6=("ca-certificates" "wget")
 prepare__128_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
@@ -312,12 +295,11 @@ if [ "${__status}" != 0 ]; then
 fi
 # Read parameters
 read_param__129_v0 "VERSION" "latest"
-version_9="${ret_read_param129_v0}"
+version_8="${ret_read_param129_v0}"
 # Ensure necessary packages
-if [ "$([ "_${version_9}" != "_latest" ]; echo $?)" != 0 ]; then
-    array_add_12=("${base_packages_7[@]}" "${dependencies_6[@]}")
+if [ "$([ "_${version_8}" != "_latest" ]; echo $?)" != 0 ]; then
     array_13=("jq" "curl")
-    array_add_14=("${array_add_12[@]}" "${array_13[@]}")
+    array_add_14=("${base_packages_6[@]}" "${array_13[@]}")
     ensure_packages__127_v0 array_add_14[@]
     __status=$?
     if [ "${__status}" != 0 ]; then
@@ -328,52 +310,63 @@ if [ "$([ "_${version_9}" != "_latest" ]; echo $?)" != 0 ]; then
     if [ "${__status}" != 0 ]; then
         exit "${__status}"
     fi
-    version_9="${ret_fetch_latest_version130_v0}"
+    version_8="${ret_fetch_latest_version130_v0}"
 else
-    array_add_15=("${base_packages_7[@]}" "${dependencies_6[@]}")
-    ensure_packages__127_v0 array_add_15[@]
+    ensure_packages__127_v0 base_packages_6[@]
     __status=$?
     if [ "${__status}" != 0 ]; then
         exit "${__status}"
     fi
 fi
-normalize_version__131_v0 "${version_9}"
-version_9="${ret_normalize_version131_v0}"
+normalize_version__131_v0 "${version_8}"
+version_8="${ret_normalize_version131_v0}"
 # Setup temporary directory
-temp_dir_12="/tmp/amber-feature"
-echo "Preparing installation in ${temp_dir_12}..."
-mkdir -p ${temp_dir_12}
+temp_dir_11="/tmp/lefthook-feature"
+echo "Preparing installation in ${temp_dir_11}..."
+mkdir -p ${temp_dir_11}
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-cd "${temp_dir_12}" || exit
+cd "${temp_dir_11}" || exit
 get_architecture__126_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-arch_14="${ret_get_architecture126_v0}"
-filename_15="${__BINARY_NAME_3}-linux-musl-${arch_14}.tar.xz"
-url_16="https://github.com/${__REPO_OWNER_4}/${__REPO_NAME_5}/releases/download/${version_9}/${filename_15}"
-echo "Installing ${__BINARY_NAME_3} ${version_9}..."
-download_file__132_v0 "${url_16}" "${filename_15}"
+arch_13="${ret_get_architecture126_v0}"
+filename_14="${__BINARY_NAME_3}_${version_8}_Linux_${arch_13}"
+release_url_15="https://github.com/${__REPO_OWNER_4}/${__REPO_NAME_5}/releases/download/v${version_8}"
+url_16="${release_url_15}/${filename_14}"
+echo "Installing ${__BINARY_NAME_3} ${version_8}..."
+download_file__132_v0 "${url_16}" "${filename_14}"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-extract_archive__135_v0 "${filename_15}"
+verify_sha256_from_manifest__134_v0 "${release_url_15}/${__BINARY_NAME_3}_checksums.txt" "${filename_14}"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-install_binary__136_v0 "${__BINARY_NAME_3}" "/usr/local/bin"
+chmod +x ${filename_14}
+__status=$?
+if [ "${__status}" != 0 ]; then
+    exit "${__status}"
+fi
+mv ${filename_14} /usr/local/bin/${__BINARY_NAME_3}
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
 # Clean up
-cleanup_temp_dir__137_v0 "${temp_dir_12}"
+cd "-" || exit
+rm -rf /var/lib/apt/lists/*
+__status=$?
+if [ "${__status}" != 0 ]; then
+    exit "${__status}"
+fi
+rm -rf ${temp_dir_11}
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"

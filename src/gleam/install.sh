@@ -264,48 +264,48 @@ verify_sha256__133_v0() {
     fi
 }
 
-extract_archive__134_v0() {
+extract_archive__135_v0() {
     local filename=$1
     echo "Extracting ${filename}..."
     tar -xf ${filename}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_extract_archive134_v0=''
+        ret_extract_archive135_v0=''
         return "${__status}"
     fi
 }
 
-install_binary__135_v0() {
+install_binary__136_v0() {
     local binary_name=$1
     local install_dir=$2
     echo "Installing ${binary_name} to ${install_dir}..."
     file_chmod__45_v0 "${binary_name}" "+x"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_binary135_v0=''
+        ret_install_binary136_v0=''
         return "${__status}"
     fi
     mv "${binary_name}" "${install_dir}/${binary_name}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_binary135_v0=''
+        ret_install_binary136_v0=''
         return "${__status}"
     fi
 }
 
-cleanup_temp_dir__136_v0() {
+cleanup_temp_dir__137_v0() {
     local temp_dir=$1
     cd "-" || exit
     clean_up__125_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cleanup_temp_dir136_v0=''
+        ret_cleanup_temp_dir137_v0=''
         return "${__status}"
     fi
     rm -rf ${temp_dir}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cleanup_temp_dir136_v0=''
+        ret_cleanup_temp_dir137_v0=''
         return "${__status}"
     fi
 }
@@ -375,18 +375,18 @@ __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-extract_archive__134_v0 "${filename_14}"
+extract_archive__135_v0 "${filename_14}"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-install_binary__135_v0 "${__BINARY_NAME_3}" "/usr/local/bin"
+install_binary__136_v0 "${__BINARY_NAME_3}" "/usr/local/bin"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
 # Clean up
-cleanup_temp_dir__136_v0 "${temp_dir_11}"
+cleanup_temp_dir__137_v0 "${temp_dir_11}"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"

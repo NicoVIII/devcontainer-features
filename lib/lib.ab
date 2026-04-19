@@ -81,6 +81,27 @@ pub fun verify_sha256(url: Text): Null? {
     $ wget -qO- "{url}.sha256" | sha256sum -c - $?
 }
 
+/// Verifies a sha256sum by downloading a checksum manifest and checking a single artifact entry
+pub fun verify_sha256_from_manifest(checksum_url: Text, artifact_name: Text): Null? {
+    echo "Checking sha256sum..."
+    const manifest_filename = ".checksum-manifest"
+    const entry_filename = ".checksum-entry"
+    download_file(checksum_url, manifest_filename)?
+
+    let checksum_entries = $ grep -F "  {artifact_name}" {manifest_filename} | grep -Fv "  {artifact_name}.gz" || true $?
+
+    const match_count = $ printf "%s" "{checksum_entries}" | grep -c . || true $?
+    if match_count != "1" {
+        echo_error("Checksum manifest must contain exactly one entry for {artifact_name}")
+        fail 1
+    }
+
+    $ printf "%s\n" "{checksum_entries}" > {entry_filename} $?
+    $ sha256sum -c {entry_filename} $?
+    $ rm -f {entry_filename} $?
+    $ rm -f {manifest_filename} $?
+}
+
 /// Extracts tar.xz or tar.gz archives based on file extension
 pub fun extract_archive(filename: Text): Null? {
     echo "Extracting {filename}..."

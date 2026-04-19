@@ -1,0 +1,38 @@
+{
+    "debian-default": {
+        "image": "debian:latest",
+        "features": {
+            "lefthook": { }
+        }
+    },
+    "debian-latest": {
+        "image": "debian:latest",
+        "features": {
+            "lefthook": { "version": "latest" }
+        }
+    },
+    "debian-specific": {
+        "image": "debian:latest",
+        "features": {
+            "lefthook": { "version": "2.1.5" }
+        }
+    },
+    "ubuntu-default": {
+        "image": "ubuntu:latest",
+        "features": {
+            "lefthook": { }
+        }
+    },
+    "ubuntu-latest": {
+        "image": "ubuntu:latest",
+        "features": {
+            "lefthook": { "version": "latest" }
+        }
+    },
+    "ubuntu-specific": {
+        "image": "ubuntu:latest",
+        "features": {
+            "lefthook": { "version": "2.1.5" }
+        }
+    }
+}

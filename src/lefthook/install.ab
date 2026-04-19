@@ -1,0 +1,56 @@
+import {
+    prepare,
+    get_architecture,
+    ensure_packages,
+    read_param,
+    fetch_latest_version,
+    normalize_version,
+    download_file,
+    verify_sha256_from_manifest,
+} from "../../lib/lib.ab"
+
+// Config
+const BINARY_NAME = "lefthook"
+const REPO_OWNER = "evilmartians"
+const REPO_NAME = "lefthook"
+const base_packages = ["ca-certificates", "wget"]
+
+main {
+    prepare()?
+
+    // Read parameters
+    let version = read_param("VERSION", "latest")
+
+    // Ensure necessary packages
+    if version == "latest" {
+        ensure_packages(base_packages + ["jq", "curl"])?
+        version = fetch_latest_version(REPO_OWNER, REPO_NAME)?
+    } else {
+        ensure_packages(base_packages)?
+    }
+
+    version = normalize_version(version)
+
+    // Setup temporary directory
+    const temp_dir = "/tmp/lefthook-feature"
+    echo "Preparing installation in {temp_dir}..."
+    $ mkdir -p {temp_dir} $?
+    cd temp_dir
+
+    const arch = get_architecture()?
+    const filename = "{BINARY_NAME}_{version}_Linux_{arch}"
+    const release_url = "https://github.com/{REPO_OWNER}/{REPO_NAME}/releases/download/v{version}"
+    const url = "{release_url}/{filename}"
+
+    echo "Installing {BINARY_NAME} {version}..."
+    download_file(url, filename)?
+    verify_sha256_from_manifest("{release_url}/{BINARY_NAME}_checksums.txt", filename)?
+    $ chmod +x {filename} $?
+    $ mv {filename} /usr/local/bin/{BINARY_NAME} $?
+
+    // Clean up
+    cd "-"
+    $ rm -rf /var/lib/apt/lists/* $?
+    $ rm -rf {temp_dir} $?
+    echo "Done!"
+}

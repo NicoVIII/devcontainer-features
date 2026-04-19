@@ -1,0 +1,18 @@
+{
+    "name": "Lefthook (via GitHub Releases)",
+    "id": "lefthook",
+    "version": "0.1.0",
+    "description": "Fast and powerful Git hooks manager for any type of projects.",
+    "documentationURL": "https://github.com/NicoVIII/devcontainer-features/tree/main/src/lefthook",
+    "options": {
+        "version": {
+            "type": "string",
+            "description": "The version of Lefthook to install. Use 'latest' to install the latest version.",
+            "proposals": [
+                "latest",
+                "2.1.6"
+            ],
+            "default": "latest"
+        }
+    }
+}

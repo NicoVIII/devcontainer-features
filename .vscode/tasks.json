@@ -51,7 +51,8 @@
             "description": "A available feature inside of this repo",
             "options": [
                 "amber",
-                "gleam"
+                "gleam",
+                "lefthook"
             ],
             "type": "pickString"
         }
