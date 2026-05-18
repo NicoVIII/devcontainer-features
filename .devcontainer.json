@@ -2,7 +2,7 @@
     "image": "mcr.microsoft.com/devcontainers/base:2-noble",
     "features": {
         "ghcr.io/devcontainers/features/node:1": { },
-        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+        "ghcr.io/devcontainers/features/docker-in-docker:3": {
             "disableIp6tables": true
         },
         "ghcr.io/NicoVIII/devcontainer-features/amber:0": {
