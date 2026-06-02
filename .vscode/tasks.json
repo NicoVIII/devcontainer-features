@@ -7,7 +7,7 @@
             "label": "Check",
             "type": "shell",
             "command": "find ./lib -name \"*.ab\" -print -exec amber check {} \\; && find ./src -name \"*.ab\" -print -exec amber check {} \\;",
-            "problemMatcher": [ ]
+            "problemMatcher": []
         },
         {
             "label": "Build",
@@ -42,7 +42,7 @@
             "label": "Generate docs",
             "type": "shell",
             "command": "(cd ./src && devcontainer features generate-docs -n \"NicoVIII/devcontainer-features\")",
-            "problemMatcher": [ ]
+            "problemMatcher": []
         }
     ],
     "inputs": [
@@ -52,7 +52,8 @@
             "options": [
                 "amber",
                 "gleam",
-                "lefthook"
+                "lefthook",
+                "oxlint",
             ],
             "type": "pickString"
         }

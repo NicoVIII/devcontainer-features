@@ -1,0 +1,24 @@
+{
+    "name": "Oxlint (via GitHub Releases)",
+    "id": "oxlint",
+    "version": "0.1.0",
+    "description": "Oxlint is a high-performance linter for JavaScript and TypeScript built on the Oxc compiler stack.",
+    "documentationURL": "https://github.com/NicoVIII/devcontainer-features/tree/main/src/oxlint",
+    "options": {
+        "version": {
+            "type": "string",
+            "description": "The version of Oxlint to install. Use 'latest' to install the latest version.",
+            "proposals": [
+                "1.68.0"
+            ],
+            "default": "latest"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "oxc.oxc-vscode"
+            ]
+        }
+    }
+}
