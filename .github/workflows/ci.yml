@@ -96,7 +96,7 @@ jobs:
 
   amber:
     needs: detect-changes
-    if: ${{ needs.detect-changes.outputs.amber_changed == 'true' }}
+    if: ${{ needs.detect-changes.outputs.amber_changed == 'true' || startsWith(github.ref, 'refs/tags/amber-v') }}
     permissions:
       contents: write
       packages: write
@@ -107,7 +107,7 @@ jobs:
 
   gleam:
     needs: detect-changes
-    if: ${{ needs.detect-changes.outputs.gleam_changed == 'true' }}
+    if: ${{ needs.detect-changes.outputs.gleam_changed == 'true' || startsWith(github.ref, 'refs/tags/gleam-v') }}
     permissions:
       contents: write
       packages: write
@@ -118,7 +118,7 @@ jobs:
 
   just:
     needs: detect-changes
-    if: ${{ needs.detect-changes.outputs.just_changed == 'true' }}
+    if: ${{ needs.detect-changes.outputs.just_changed == 'true' || startsWith(github.ref, 'refs/tags/just-v') }}
     permissions:
       contents: write
       packages: write
@@ -129,7 +129,7 @@ jobs:
 
   lefthook:
     needs: detect-changes
-    if: ${{ needs.detect-changes.outputs.lefthook_changed == 'true' }}
+    if: ${{ needs.detect-changes.outputs.lefthook_changed == 'true' || startsWith(github.ref, 'refs/tags/lefthook-v') }}
     permissions:
       contents: write
       packages: write
@@ -140,7 +140,7 @@ jobs:
 
   oxlint:
     needs: detect-changes
-    if: ${{ needs.detect-changes.outputs.oxlint_changed == 'true' }}
+    if: ${{ needs.detect-changes.outputs.oxlint_changed == 'true' || startsWith(github.ref, 'refs/tags/oxlint-v') }}
     permissions:
       contents: write
       packages: write
