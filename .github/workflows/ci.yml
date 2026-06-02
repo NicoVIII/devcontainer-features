@@ -1,0 +1,150 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "*-v*"
+    paths:
+      - ".github/workflows/**"
+      - "lib/**"
+      - "src/**"
+      - "test/**"
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+      - "lib/**"
+      - "src/**"
+      - "test/**"
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Amber
+        uses: lens0021/setup-amber@v2
+        with:
+          amber-version: 0.5.1-alpha
+
+      - run: npm install -g @devcontainers/cli
+        name: Install devcontainer CLI
+
+      - name: Check Amber library
+        run: find ./lib -name "*.ab" -print -exec amber check {} \;
+
+      - name: Build Amber feature install scripts
+        run: find ./src -name "install.ab" -print -exec amber build {} \;
+
+      - name: Generate documentation
+        run: |
+          (cd ./src && devcontainer features generate-docs -n "NicoVIII/devcontainer-features")
+
+      - name: Check for repository changes
+        run: |
+          if [ -z "$(git status --porcelain=v1)" ]; then
+            echo "Generated documentation and Amber artifacts are up to date."
+          else
+            echo "Changes detected after Amber checks/builds or documentation generation:"
+            git status --porcelain=v1
+            echo "Please run Amber validation/build and documentation generation locally, then commit the changes."
+            exit 1
+          fi
+
+  detect-changes:
+    needs: check
+    runs-on: ubuntu-latest
+    outputs:
+      amber_changed: ${{ steps.filter.outputs.amber }}
+      gleam_changed: ${{ steps.filter.outputs.gleam }}
+      just_changed: ${{ steps.filter.outputs.just }}
+      lefthook_changed: ${{ steps.filter.outputs.lefthook }}
+      oxlint_changed: ${{ steps.filter.outputs.oxlint }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            amber:
+              - '.github/workflows/**'
+              - 'lib/**'
+              - 'src/amber/**'
+              - 'test/amber/**'
+            gleam:
+              - '.github/workflows/**'
+              - 'lib/**'
+              - 'src/gleam/**'
+              - 'test/gleam/**'
+            just:
+              - '.github/workflows/**'
+              - 'lib/**'
+              - 'src/just/**'
+              - 'test/just/**'
+            lefthook:
+              - '.github/workflows/**'
+              - 'lib/**'
+              - 'src/lefthook/**'
+              - 'test/lefthook/**'
+            oxlint:
+              - '.github/workflows/**'
+              - 'lib/**'
+              - 'src/oxlint/**'
+              - 'test/oxlint/**'
+
+  amber:
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.amber_changed == 'true' }}
+    permissions:
+      contents: write
+      packages: write
+    uses: ./.github/workflows/reusable-feature.yml
+    with:
+      feature_name: "amber"
+    secrets: inherit
+
+  gleam:
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.gleam_changed == 'true' }}
+    permissions:
+      contents: write
+      packages: write
+    uses: ./.github/workflows/reusable-feature.yml
+    with:
+      feature_name: "gleam"
+    secrets: inherit
+
+  just:
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.just_changed == 'true' }}
+    permissions:
+      contents: write
+      packages: write
+    uses: ./.github/workflows/reusable-feature.yml
+    with:
+      feature_name: "just"
+    secrets: inherit
+
+  lefthook:
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.lefthook_changed == 'true' }}
+    permissions:
+      contents: write
+      packages: write
+    uses: ./.github/workflows/reusable-feature.yml
+    with:
+      feature_name: "lefthook"
+    secrets: inherit
+
+  oxlint:
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.oxlint_changed == 'true' }}
+    permissions:
+      contents: write
+      packages: write
+    uses: ./.github/workflows/reusable-feature.yml
+    with:
+      feature_name: "oxlint"
+    secrets: inherit
