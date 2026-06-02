@@ -1,0 +1,18 @@
+{
+    "name": "Just (via GitHub Releases)",
+    "id": "just",
+    "version": "0.1.0",
+    "description": "just is a handy way to save and run project-specific commands.",
+    "documentationURL": "https://github.com/NicoVIII/devcontainer-features/tree/main/src/just",
+    "options": {
+        "version": {
+            "type": "string",
+            "description": "The version of Just to install. Use 'latest' to install the latest version.",
+            "proposals": [
+                "latest",
+                "1.51.0"
+            ],
+            "default": "latest"
+        }
+    }
+}

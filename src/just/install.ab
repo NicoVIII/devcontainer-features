@@ -1,0 +1,48 @@
+import { prepare } from "../../lib/core.ab"
+import { get_architecture, ensure_packages } from "../../lib/system.ab"
+import { read_param } from "../../lib/params.ab"
+import { fetch_latest_version, normalize_version, download_file } from "../../lib/download.ab"
+import { extract_archive, install_binary, cleanup_temp_dir } from "../../lib/install.ab"
+
+// Config
+const BINARY_NAME = "just"
+const REPO_OWNER = "casey"
+const REPO_NAME = "just"
+const base_packages = ["ca-certificates", "wget"]
+
+main {
+    prepare()?
+
+    // Read parameters
+    let version = read_param("VERSION", "latest")
+
+    // Ensure necessary packages
+    if version == "latest" {
+        ensure_packages(base_packages + ["jq", "curl"])?
+        version = fetch_latest_version(REPO_OWNER, REPO_NAME)?
+    } else {
+        ensure_packages(base_packages)?
+    }
+
+    version = normalize_version(version)
+
+    // Setup temporary directory
+    const temp_dir = "/tmp/just-feature"
+    echo "Preparing installation in {temp_dir}..."
+    $ mkdir -p {temp_dir} $?
+    cd temp_dir
+
+    const arch = get_architecture()?
+    const filename = "{BINARY_NAME}-{version}-{arch}-unknown-linux-musl.tar.gz"
+    const release_url = "https://github.com/{REPO_OWNER}/{REPO_NAME}/releases/download/{version}"
+    const url = "{release_url}/{filename}"
+
+    echo "Installing {BINARY_NAME} {version}..."
+    download_file(url, filename)?
+    extract_archive(filename)?
+    install_binary(BINARY_NAME, "/usr/local/bin")?
+
+    // Clean up
+    cleanup_temp_dir(temp_dir)?
+    echo "Done!"
+}
