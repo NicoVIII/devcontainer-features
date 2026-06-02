@@ -16,6 +16,6 @@ pub fun normalize_version(version: Text): Text {
 
 /// Downloads a file from URL to the specified local filename
 pub fun download_file(url: Text, local_filename: Text): Null? {
-    echo "Downloading from {url}..."
+    echo("Downloading from {url}...")
     $ wget -qO {local_filename} {url} $?
 }

@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [Unreleased]
+
+### Changed
+
+- Update amber to 0.6.0-alpha
+
 ## [0.1.1] - 2026-04-05
 
 ### Changed
@@ -20,5 +26,6 @@ Initial release - supports version property including "latest"
 [semantic versioning]: https://semver.org/spec/v2.0.0.html
 
 <!-- Versions -->
+[Unreleased]: https://github.com/NicoVIII/devcontainer-features/compare/amber-v0.1.1...HEAD
 [0.1.1]: https://github.com/NicoVIII/devcontainer-features/compare/amber-v0.1.0...amber-v0.1.1
 [0.1.0]: https://github.com/NicoVIII/devcontainer-features/releases/tag/amber-v0.1.0

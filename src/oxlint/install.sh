@@ -1,187 +1,236 @@
 #!/usr/bin/env bash
 # Written in [Amber](https://amber-lang.com/)
-# version: 0.5.1-alpha
-# We cannot import `bash_version` from `env.ab` because it imports `text.ab` making a circular dependency.
-# This is a workaround to avoid that issue and the import system should be improved in the future.
-starts_with__23_v0() {
-    local text=$1
-    local prefix=$2
-    command_0="$(if [[ "${text}" == "${prefix}"* ]]; then
-    echo 1
-  fi)"
+# version: 0.6.0-alpha
+[ "$EUID" -ne 0 ] && { { command -v sudo >/dev/null 2>&1 && __sudo=sudo; } || { command -v doas >/dev/null 2>&1 && __sudo=doas; }; }
+if [ -n "$ZSH_VERSION" ]; then
+    EXEC_SHELL="zsh"
+    IFS='.' read -A EXEC_SHELL_VERSION <<< "$ZSH_VERSION"
+elif [ -n "$KSH_VERSION" ]; then
+    EXEC_SHELL="ksh"
+    __exec_shell_version="${.sh.version##*/}"
+    IFS='.' read -a EXEC_SHELL_VERSION <<< "${__exec_shell_version%% *}"
+else
+    EXEC_SHELL="bash"
+    EXEC_SHELL_VERSION=("${BASH_VERSINFO[0]}" "${BASH_VERSINFO[1]}" "${BASH_VERSINFO[2]}")
+fi
+# starts_with(text: Text, prefix: Text)
+starts_with__22_v0() {
+    local text_58="${1}"
+    local prefix_59="${2}"
+    [[ "${text_58}" == "${prefix_59}"* ]]
     __status=$?
-    result_9="${command_0}"
-    ret_starts_with23_v0="$([ "_${result_9}" != "_1" ]; echo $?)"
+    ret_starts_with22_v0="$(( __status == 0 ))"
     return 0
 }
 
-slice__25_v0() {
-    local text=$1
-    local index=$2
-    local length=$3
-    if [ "$(( ${length} == 0 ))" != 0 ]; then
-        __length_1="${text}"
-        length="$(( ${#__length_1} - ${index} ))"
+# slice(text: Text, index: Int, length: Int)
+slice__24_v0() {
+    local text_60="${1}"
+    local index_61="${2}"
+    local length_62="${3}"
+    local result_63=""
+    if [ "$(( length_62 == 0 ))" != 0 ]; then
+        local __length_0="${text_60}"
+        length_62="$(( ${#__length_0} - index_61 ))"
     fi
-    if [ "$(( ${length} <= 0 ))" != 0 ]; then
-        ret_slice25_v0=""
+    if [ "$(( length_62 <= 0 ))" != 0 ]; then
+        ret_slice24_v0="${result_63}"
         return 0
     fi
-    command_2="$(printf "%.${length}s" "${text: ${index}}")"
+    result_63="${text_60: ${index_61}: ${length_62}}"
     __status=$?
-    ret_slice25_v0="${command_2}"
+    ret_slice24_v0="${result_63}"
     return 0
 }
 
-file_exists__37_v0() {
-    local path=$1
-    [ -f "${path}" ]
+# file_exists(path: Text)
+file_exists__39_v0() {
+    local path_92="${1}"
+    [ -f "${path_92}" ]
     __status=$?
-    ret_file_exists37_v0="$(( ${__status} == 0 ))"
+    ret_file_exists39_v0="$(( __status == 0 ))"
     return 0
 }
 
-file_chmod__45_v0() {
-    local path=$1
-    local mode=$2
-    file_exists__37_v0 "${path}"
-    ret_file_exists37_v0__153_8="${ret_file_exists37_v0}"
-    if [ "${ret_file_exists37_v0__153_8}" != 0 ]; then
-        chmod "${mode}" "${path}"
+# file_chmod(path: Text, mode: Text)
+file_chmod__47_v0() {
+    local path_90="${1}"
+    local mode_91="${2}"
+    file_exists__39_v0 "${path_90}"
+    local ret_file_exists39_v0__153_8="${ret_file_exists39_v0}"
+    if [ "${ret_file_exists39_v0__153_8}" != 0 ]; then
+        chmod "${mode_91}" "${path_90}"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_file_chmod45_v0=''
+            ret_file_chmod47_v0=''
             return "${__status}"
         fi
-        ret_file_chmod45_v0=''
+        ret_file_chmod47_v0=''
         return 0
     fi
-    echo "The file ${path} doesn't exist"'!'""
-    ret_file_chmod45_v0=''
+    echo "The file ${path_90} doesn't exist"'!'""
+    ret_file_chmod47_v0=''
     return 1
 }
 
-env_var_set__97_v0() {
-    local name=$1
-    local val=$2
-    export $name="$val" 2> /dev/null
+# env_var_set(name: Text, val: Text)
+env_var_set__119_v0() {
+    local name_32="${1}"
+    local val_33="${2}"
+    export $name_32="$val_33" 2> /dev/null
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_env_var_set97_v0=''
+        ret_env_var_set119_v0=''
         return "${__status}"
     fi
 }
 
-env_var_get__98_v0() {
-    local name=$1
-    command_3="$(echo ${!name})"
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        ret_env_var_get98_v0=''
-        return "${__status}"
+# env_var_get(name: Text)
+env_var_get__120_v0() {
+    local name_40="${1}"
+    if [ "$([ "_${EXEC_SHELL}" != "_bash" ]; echo $?)" != 0 ]; then
+        local command_1
+        command_1="$(printf "%s
+" "${!name_40}")"
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_env_var_get120_v0=''
+            return "${__status}"
+        fi
+        ret_env_var_get120_v0="${command_1}"
+        return 0
+    elif [ "$([ "_${EXEC_SHELL}" != "_zsh" ]; echo $?)" != 0 ]; then
+        local command_2
+        command_2="$(printf "%s
+" "${(P)name_40}")"
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_env_var_get120_v0=''
+            return "${__status}"
+        fi
+        ret_env_var_get120_v0="${command_2}"
+        return 0
+    elif [ "$([ "_${EXEC_SHELL}" != "_ksh" ]; echo $?)" != 0 ]; then
+        local command_3
+        command_3="$(eval "echo \${$name_40}")"
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_env_var_get120_v0=''
+            return "${__status}"
+        fi
+        ret_env_var_get120_v0="${command_3}"
+        return 0
     fi
-    ret_env_var_get98_v0="${command_3}"
-    return 0
 }
 
-printf__106_v0() {
-    local format=$1
-    local args=("${!2}")
-    args=("${format}" "${args[@]}")
+# printf(format: Text, args: [Text])
+printf__128_v0() {
+    local format_30="${1}"
+    local args_31=("${!2}")
+    args_31=("${format_30}" "${args_31[@]}")
     __status=$?
-    printf "${args[@]}"
+    printf "${args_31[@]}"
     __status=$?
 }
 
-echo_error__116_v0() {
-    local message=$1
-    local exit_code=$2
-    array_4=("${message}")
-    printf__106_v0 "\\x1b[1;3;97;41m%s\\x1b[0m
+# echo_error(message: Text, exit_code: Int)
+echo_error__138_v0() {
+    local message_28="${1}"
+    local exit_code_29="${2}"
+    local array_4=("${message_28}")
+    printf__128_v0 "\\x1b[1;3;97;41m%s\\x1b[0m
 " array_4[@]
-    if [ "$(( ${exit_code} > 0 ))" != 0 ]; then
-        exit "${exit_code}"
+    if [ "$(( exit_code_29 > 0 ))" != 0 ]; then
+        exit "${exit_code_29}"
     fi
 }
 
-ensure_run_as_root__120_v0() {
+# ensure_run_as_root()
+ensure_run_as_root__159_v0() {
+    local command_5
     command_5="$(id -u)"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_ensure_run_as_root120_v0=''
+        ret_ensure_run_as_root159_v0=''
         return "${__status}"
     fi
-    id_7="${command_5}"
-    if [ "$([ "_${id_7}" == "_0" ]; echo $?)" != 0 ]; then
-        echo_error__116_v0 "This script must be run as root" 1
-        ret_ensure_run_as_root120_v0=''
+    local id_27="${command_5}"
+    if [ "$([ "_${id_27}" == "_0" ]; echo $?)" != 0 ]; then
+        echo_error__138_v0 "This script must be run as root" 1
+        ret_ensure_run_as_root159_v0=''
         return 1
     fi
 }
 
-clean_up__121_v0() {
+# clean_up()
+clean_up__160_v0() {
     rm -rf /var/lib/apt/lists/*
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_clean_up121_v0=''
+        ret_clean_up160_v0=''
         return "${__status}"
     fi
 }
 
-prepare__122_v0() {
-    ensure_run_as_root__120_v0 
+# prepare()
+prepare__161_v0() {
+    ensure_run_as_root__159_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_prepare122_v0=''
+        ret_prepare161_v0=''
         return "${__status}"
     fi
-    clean_up__121_v0 
+    clean_up__160_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_prepare122_v0=''
+        ret_prepare161_v0=''
         return "${__status}"
     fi
-    env_var_set__97_v0 "DEBIAN_FRONTEND" "noninteractive"
+    env_var_set__119_v0 "DEBIAN_FRONTEND" "noninteractive"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_prepare122_v0=''
+        ret_prepare161_v0=''
         return "${__status}"
     fi
 }
 
-get_architecture__125_v0() {
+# get_architecture()
+get_architecture__164_v0() {
+    local command_6
     command_6="$(dpkg --print-architecture)"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_get_architecture125_v0=''
+        ret_get_architecture164_v0=''
         return "${__status}"
     fi
-    arch_11="${command_6}"
-    if [ "$([ "_${arch_11}" != "_amd64" ]; echo $?)" != 0 ]; then
-        ret_get_architecture125_v0="x86_64"
+    local arch_66="${command_6}"
+    if [ "$([ "_${arch_66}" != "_amd64" ]; echo $?)" != 0 ]; then
+        ret_get_architecture164_v0="x86_64"
         return 0
-    elif [ "$([ "_${arch_11}" != "_arm64" ]; echo $?)" != 0 ]; then
-        ret_get_architecture125_v0="aarch64"
+    elif [ "$([ "_${arch_66}" != "_arm64" ]; echo $?)" != 0 ]; then
+        ret_get_architecture164_v0="aarch64"
         return 0
     else
-        echo_error__116_v0 "Unsupported architecture: ${arch_11}" 1
-        ret_get_architecture125_v0=''
+        echo_error__138_v0 "Unsupported architecture: ${arch_66}" 1
+        ret_get_architecture164_v0=''
         return 1
     fi
 }
 
-ensure_packages__126_v0() {
-    local packages=("${!1}")
+# ensure_packages(packages: [Text])
+ensure_packages__165_v0() {
+    local packages_43=("${!1}")
     # Check if packages are already installed
-    dpkg -s ${packages[@]} > /dev/null 2>&1
+    dpkg -s ${packages_43[@]} > /dev/null 2>&1
     __status=$?
     if [ "${__status}" != 0 ]; then
         # At least some packages are missing
         # We first check, if we need an update
+        local command_7
         command_7="$(find /var/lib/apt/lists/* | wc -l)"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_ensure_packages126_v0=''
+            ret_ensure_packages165_v0=''
             return "${__status}"
         fi
         if [ "$([ "_${command_7}" != "_0" ]; echo $?)" != 0 ]; then
@@ -189,98 +238,110 @@ ensure_packages__126_v0() {
             apt-get update -y
             __status=$?
             if [ "${__status}" != 0 ]; then
-                ret_ensure_packages126_v0=''
+                ret_ensure_packages165_v0=''
                 return "${__status}"
             fi
         fi
-        apt-get -y install --no-install-recommends ${packages[@]}
+        apt-get -y install --no-install-recommends ${packages_43[@]}
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_ensure_packages126_v0=''
+            ret_ensure_packages165_v0=''
             return "${__status}"
         fi
     fi
 }
 
-read_param__130_v0() {
-    local name=$1
-    local default=$2
-    env_var_get__98_v0 "${name}"
+# read_param(name: Text, default: Text)
+read_param__169_v0() {
+    local name_38="${1}"
+    local default_39="${2}"
+    env_var_get__120_v0 "${name_38}"
     __status=$?
     if [ "${__status}" != 0 ]; then
         :
     fi
-    ret_read_param130_v0="${ret_env_var_get98_v0}"
+    ret_read_param169_v0="${ret_env_var_get120_v0}"
     return 0
 }
 
-normalize_version__135_v0() {
-    local version=$1
-    starts_with__23_v0 "${version}" "v"
-    ret_starts_with23_v0__11_8="${ret_starts_with23_v0}"
-    if [ "${ret_starts_with23_v0__11_8}" != 0 ]; then
-        slice__25_v0 "${version}" 1 0
-        ret_normalize_version135_v0="${ret_slice25_v0}"
+# normalize_version(version: Text)
+normalize_version__174_v0() {
+    local version_57="${1}"
+    starts_with__22_v0 "${version_57}" "v"
+    local ret_starts_with22_v0__11_8="${ret_starts_with22_v0}"
+    if [ "${ret_starts_with22_v0__11_8}" != 0 ]; then
+        slice__24_v0 "${version_57}" 1 0
+        ret_normalize_version174_v0="${ret_slice24_v0}"
         return 0
     fi
-    ret_normalize_version135_v0="${version}"
+    ret_normalize_version174_v0="${version_57}"
     return 0
 }
 
-download_file__136_v0() {
-    local url=$1
-    local local_filename=$2
-    echo "Downloading from ${url}..."
-    wget -qO ${local_filename} ${url}
+# download_file(url: Text, local_filename: Text)
+download_file__175_v0() {
+    local url_73="${1}"
+    local local_filename_74="${2}"
+    echo "Downloading from ${url_73}..."
+    wget -qO ${local_filename_74} ${url_73}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_download_file136_v0=''
+        ret_download_file175_v0=''
         return "${__status}"
     fi
 }
 
-extract_archive__140_v0() {
-    local filename=$1
-    echo "Extracting ${filename}..."
-    tar -xf ${filename}
+# extract_archive(filename: Text)
+extract_archive__179_v0() {
+    local filename_76="${1}"
+    echo "Extracting ${filename_76}..."
+    tar -xf ${filename_76}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_extract_archive140_v0=''
+        ret_extract_archive179_v0=''
         return "${__status}"
     fi
 }
 
-install_binary__141_v0() {
-    local binary_name=$1
-    local install_dir=$2
-    echo "Installing ${binary_name} to ${install_dir}..."
-    file_chmod__45_v0 "${binary_name}" "+x"
+# install_binary(file_name: Text, binary_name: Text, install_dir: Text)
+install_binary__180_v0() {
+    local file_name_87="${1}"
+    local binary_name_88="${2}"
+    local install_dir_89="${3}"
+    echo "Installing ${file_name_87} as ${binary_name_88} to ${install_dir_89}..."
+    file_chmod__47_v0 "${file_name_87}" "+x"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_binary141_v0=''
+        ret_install_binary180_v0=''
         return "${__status}"
     fi
-    mv "${binary_name}" "${install_dir}/${binary_name}"
+    mv "${file_name_87}" "${install_dir_89}/${binary_name_88}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_binary141_v0=''
+        ret_install_binary180_v0=''
         return "${__status}"
     fi
 }
 
-cleanup_temp_dir__142_v0() {
-    local temp_dir=$1
-    cd "-" || exit
+# cleanup_temp_dir(temp_dir: Text)
+cleanup_temp_dir__181_v0() {
+    local temp_dir_94="${1}"
+    cd "-"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_cleanup_temp_dir181_v0=''
+        return "${__status}"
+    fi
     rm -rf /var/lib/apt/lists/*
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cleanup_temp_dir142_v0=''
+        ret_cleanup_temp_dir181_v0=''
         return "${__status}"
     fi
-    rm -rf ${temp_dir}
+    rm -rf ${temp_dir_94}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cleanup_temp_dir142_v0=''
+        ret_cleanup_temp_dir181_v0=''
         return "${__status}"
     fi
 }
@@ -290,69 +351,73 @@ __BINARY_NAME_3="oxlint"
 __REPO_OWNER_4="oxc-project"
 __REPO_NAME_5="oxc"
 base_packages_6=("ca-certificates" "wget")
-prepare__122_v0 
+prepare__161_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
 # Read parameters
-read_param__130_v0 "VERSION" "latest"
-version_8="${ret_read_param130_v0}"
+read_param__169_v0 "VERSION" "latest"
+version_41="${ret_read_param169_v0}"
 # Ensure necessary packages
-if [ "$([ "_${version_8}" != "_latest" ]; echo $?)" != 0 ]; then
+if [ "$([ "_${version_41}" != "_latest" ]; echo $?)" != 0 ]; then
     # Not supported for now
-    echo_error__116_v0 "Error: Installing the latest version is not supported yet. Please specify a version." 1
+    echo_error__138_v0 "Error: Installing the latest version is not supported yet. Please specify a version." 1
     exit 1
 else
-    ensure_packages__126_v0 base_packages_6[@]
+    ensure_packages__165_v0 base_packages_6[@]
     __status=$?
     if [ "${__status}" != 0 ]; then
         exit "${__status}"
     fi
 fi
-normalize_version__135_v0 "${version_8}"
-version_8="${ret_normalize_version135_v0}"
+normalize_version__174_v0 "${version_41}"
+version_41="${ret_normalize_version174_v0}"
 # Setup temporary directory
-temp_dir_10="/tmp/oxlint-feature"
-echo "Preparing installation in ${temp_dir_10}..."
-mkdir -p ${temp_dir_10}
+temp_dir_64="/tmp/oxlint-feature"
+echo "Preparing installation in ${temp_dir_64}..."
+mkdir -p ${temp_dir_64}
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-cd "${temp_dir_10}" || exit
-get_architecture__125_v0 
+cd "${temp_dir_64}"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-arch_12="${ret_get_architecture125_v0}"
-filebase_13="${__BINARY_NAME_3}-${arch_12}-unknown-linux-musl"
-filename_14="${filebase_13}.tar.gz"
-url_15="https://github.com/${__REPO_OWNER_4}/${__REPO_NAME_5}/releases/download/apps_v${version_8}/${filename_14}"
-echo "Installing ${__BINARY_NAME_3} ${version_8}..."
-download_file__136_v0 "${url_15}" "${filename_14}"
+get_architecture__164_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-extract_archive__140_v0 "${filename_14}"
+arch_67="${ret_get_architecture164_v0}"
+filebase_68="${__BINARY_NAME_3}-${arch_67}-unknown-linux-musl"
+filename_69="${filebase_68}.tar.gz"
+url_70="https://github.com/${__REPO_OWNER_4}/${__REPO_NAME_5}/releases/download/apps_v${version_41}/${filename_69}"
+echo "Installing ${__BINARY_NAME_3} ${version_41}..."
+download_file__175_v0 "${url_70}" "${filename_69}"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-mv "${filebase_13}" "${__BINARY_NAME_3}"
+extract_archive__179_v0 "${filename_69}"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-install_binary__141_v0 "${__BINARY_NAME_3}" "/usr/local/bin"
+mv "${filebase_68}" "${__BINARY_NAME_3}"
+__status=$?
+if [ "${__status}" != 0 ]; then
+    exit "${__status}"
+fi
+install_binary__180_v0 "${__BINARY_NAME_3}" "${__BINARY_NAME_3}" "/usr/local/bin"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
 # Clean up
-cleanup_temp_dir__142_v0 "${temp_dir_10}"
+cleanup_temp_dir__181_v0 "${temp_dir_64}"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"

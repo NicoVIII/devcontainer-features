@@ -21,7 +21,7 @@ main {
     if version == "latest" {
         // Not supported for now
         echo_error("Error: Installing the latest version is not supported yet. Please specify a version.")
-        exit 1
+        exit(1)
     } else {
         ensure_packages(base_packages)?
     }
@@ -30,22 +30,22 @@ main {
 
     // Setup temporary directory
     const temp_dir = "/tmp/oxlint-feature"
-    echo "Preparing installation in {temp_dir}..."
+    echo("Preparing installation in {temp_dir}...")
     $ mkdir -p {temp_dir} $?
-    cd temp_dir
+    cd(temp_dir)?
 
     const arch = get_architecture()?
     const filebase = "{BINARY_NAME}-{arch}-unknown-linux-musl"
     const filename = "{filebase}.tar.gz"
     const url = "https://github.com/{REPO_OWNER}/{REPO_NAME}/releases/download/apps_v{version}/{filename}"
 
-    echo "Installing {BINARY_NAME} {version}..."
+    echo("Installing {BINARY_NAME} {version}...")
     download_file(url, filename)?
     extract_archive(filename)?
-    mv filebase BINARY_NAME?
-    install_binary(BINARY_NAME, "/usr/local/bin")?
+    mv(filebase, BINARY_NAME)?
+    install_binary(BINARY_NAME, BINARY_NAME, "/usr/local/bin")?
 
     // Clean up
     cleanup_temp_dir(temp_dir)?
-    echo "Done!"
+    echo("Done!")
 }

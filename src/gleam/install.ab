@@ -29,21 +29,21 @@ main {
 
     // Setup temporary directory
     const temp_dir = "/tmp/gleam-feature"
-    echo "Preparing installation in {temp_dir}..."
+    echo("Preparing installation in {temp_dir}...")
     $ mkdir -p {temp_dir} $?
-    cd temp_dir
+    cd(temp_dir)?
 
     const arch = get_architecture()?
     const filename = "{BINARY_NAME}-v{version}-{arch}-unknown-linux-musl.tar.gz"
     const url = "https://github.com/{REPO_OWNER}/{REPO_NAME}/releases/download/v{version}/{filename}"
 
-    echo "Installing {BINARY_NAME} {version}..."
+    echo("Installing {BINARY_NAME} {version}...")
     download_file(url, filename)?
     verify_sha256(url)?
     extract_archive(filename)?
-    install_binary(BINARY_NAME, "/usr/local/bin")?
+    install_binary(BINARY_NAME, BINARY_NAME, "/usr/local/bin")?
 
     // Clean up
     cleanup_temp_dir(temp_dir)?
-    echo "Done!"
+    echo("Done!")
 }

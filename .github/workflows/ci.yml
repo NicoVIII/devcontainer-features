@@ -27,7 +27,7 @@ jobs:
       - name: Setup Amber
         uses: lens0021/setup-amber@v2
         with:
-          amber-version: 0.5.1-alpha
+          amber-version: 0.6.0-alpha
 
       - run: npm install -g @devcontainers/cli
         name: Install devcontainer CLI
