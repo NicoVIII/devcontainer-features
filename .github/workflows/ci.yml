@@ -22,7 +22,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Setup Amber
         uses: lens0021/setup-amber@v2
@@ -63,7 +63,7 @@ jobs:
       lefthook_changed: ${{ steps.filter.outputs.lefthook }}
       oxlint_changed: ${{ steps.filter.outputs.oxlint }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v3
         id: filter
         with:
