@@ -1,9 +1,9 @@
 import { starts_with, slice } from "std/text"
 
-/// Fetches the latest release version from a GitHub repository API
+/// Fetches the latest release version from a GitHub repository release redirect
 pub fun fetch_latest_version(repo_owner: Text, repo_name: Text): Text? {
-    const url = "https://api.github.com/repos/{repo_owner}/{repo_name}/releases/latest"
-    return $ curl -sL {url} | jq -r .tag_name $?
+    const url = "https://github.com/{repo_owner}/{repo_name}/releases/latest"
+    return $ bash -o pipefail -c "for attempt in 1 2 3; do (wget -S --max-redirect=0 --spider '{url}' 2>&1 || true) | sed -n 's#^[[:space:]]*[Ll]ocation:[[:space:]]*##p' | sed 's#[[:space:]]*\\[following\\]##' | tr -d '\\r' | sed -n 's#^.*/releases/tag/##p' | tail -n1 | grep . && exit 0; if [ \\\$attempt -lt 3 ]; then sleep 1; fi; done; echo 'Unable to determine latest release version from {url}' >&2; exit 1" $?
 }
 
 /// Normalizes version by removing leading "v" prefix if present
