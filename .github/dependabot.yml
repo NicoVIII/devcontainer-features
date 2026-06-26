@@ -10,6 +10,10 @@ updates:
    directory: "/"
    schedule:
      interval: weekly
+   groups:
+     devcontainer-features:
+       patterns:
+         - "*"
  - package-ecosystem: "github-actions"
    directory: "/.github/workflows"
    schedule:
