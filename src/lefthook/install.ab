@@ -13,7 +13,7 @@ const base_packages = ["ca-certificates", "wget"]
 
 fun fetch_latest_version(repo_owner: Text, repo_name: Text): Text? {
     const url = "https://github.com/{repo_owner}/{repo_name}/releases/latest"
-    return $ bash -o pipefail -c "(wget -S --max-redirect=0 --spider '{url}' 2>&1 || true) | sed -n \"s#^  Location: .*/##p\" | tail -n1 | grep . || (echo 'Unable to determine latest Lefthook release version from {url}' >&2; exit 1)" $?
+    return $ bash -o pipefail -c "(wget -S --max-redirect=0 --spider '{url}' 2>&1 || true) | sed -n \"s#^  Location: .*/##p\" | tail -n1 | grep . || (echo \"Unable to determine latest Lefthook release version from {url}\" >&2; exit 1)" $?
 }
 
 main {

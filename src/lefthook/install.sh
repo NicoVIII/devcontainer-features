@@ -419,7 +419,7 @@ fetch_latest_version__194_v0() {
     local repo_name_48="${2}"
     local url_49="https://github.com/${repo_owner_47}/${repo_name_48}/releases/latest"
     local command_11
-    command_11="$(bash -o pipefail -c "(wget -S --max-redirect=0 --spider '${url_49}' 2>&1 || true) | sed -n \"s#^  Location: .*/##p\" | tail -n1 | grep . || (echo 'Unable to determine latest Lefthook release version from ${url_49}' >&2; exit 1)")"
+    command_11="$(bash -o pipefail -c "(wget -S --max-redirect=0 --spider '${url_49}' 2>&1 || true) | sed -n \"s#^  Location: .*/##p\" | tail -n1 | grep . || (echo \"Unable to determine latest Lefthook release version from ${url_49}\" >&2; exit 1)")"
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_fetch_latest_version194_v0=''
