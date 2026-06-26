@@ -1,7 +1,7 @@
 import { prepare } from "../../lib/core.ab"
 import { get_architecture, ensure_packages } from "../../lib/system.ab"
 import { read_param } from "../../lib/params.ab"
-import { fetch_latest_version, normalize_version, download_file } from "../../lib/download.ab"
+import { normalize_version, download_file } from "../../lib/download.ab"
 import { verify_sha256_from_manifest } from "../../lib/verify.ab"
 import { install_binary, cleanup_temp_dir } from "../../lib/install.ab"
 
@@ -11,6 +11,11 @@ const REPO_OWNER = "evilmartians"
 const REPO_NAME = "lefthook"
 const base_packages = ["ca-certificates", "wget"]
 
+fun fetch_latest_version(repo_owner: Text, repo_name: Text): Text? {
+    const url = "https://github.com/{repo_owner}/{repo_name}/releases/latest"
+    return $ bash -o pipefail -c "(wget -S --max-redirect=0 --spider '{url}' 2>&1 || true) | grep '^  Location:' | tail -n1 | rev | cut -d/ -f1 | rev" $?
+}
+
 main {
     prepare()?
 
@@ -19,7 +24,7 @@ main {
 
     // Ensure necessary packages
     if version == "latest" {
-        ensure_packages(base_packages + ["jq", "curl"])?
+        ensure_packages(base_packages)?
         version = fetch_latest_version(REPO_OWNER, REPO_NAME)?
     } else {
         ensure_packages(base_packages)?
