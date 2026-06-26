@@ -268,9 +268,9 @@ read_param__169_v0() {
 fetch_latest_version__173_v0() {
     local repo_owner_47="${1}"
     local repo_name_48="${2}"
-    local url_49="https://api.github.com/repos/${repo_owner_47}/${repo_name_48}/releases/latest"
+    local url_49="https://github.com/${repo_owner_47}/${repo_name_48}/releases/latest"
     local command_8
-    command_8="$(curl -sL ${url_49} | jq -r .tag_name)"
+    command_8="$(bash -o pipefail -c "(wget -S --max-redirect=0 --spider '${url_49}' 2>&1 || true) | sed -n \"s#^[[:space:]]*[Ll]ocation:[[:space:]]*.*/##p\" | sed \"s#[[:space:]]*\[following\]##\" | tail -n1 | grep . || (echo \"Unable to determine latest release version from ${url_49}\" >&2; exit 1)")"
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_fetch_latest_version173_v0=''
@@ -377,9 +377,7 @@ read_param__169_v0 "VERSION" "latest"
 version_41="${ret_read_param169_v0}"
 # Ensure necessary packages
 if [ "$([ "_${version_41}" != "_latest" ]; echo $?)" != 0 ]; then
-    array_11=("jq" "curl")
-    array_add_12=("${base_packages_6[@]}" "${array_11[@]}")
-    ensure_packages__165_v0 array_add_12[@]
+    ensure_packages__165_v0 base_packages_6[@]
     __status=$?
     if [ "${__status}" != 0 ]; then
         exit "${__status}"

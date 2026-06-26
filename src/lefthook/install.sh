@@ -264,6 +264,22 @@ read_param__169_v0() {
     return 0
 }
 
+# fetch_latest_version(repo_owner: Text, repo_name: Text)
+fetch_latest_version__173_v0() {
+    local repo_owner_47="${1}"
+    local repo_name_48="${2}"
+    local url_49="https://github.com/${repo_owner_47}/${repo_name_48}/releases/latest"
+    local command_8
+    command_8="$(bash -o pipefail -c "(wget -S --max-redirect=0 --spider '${url_49}' 2>&1 || true) | sed -n \"s#^[[:space:]]*[Ll]ocation:[[:space:]]*.*/##p\" | sed \"s#[[:space:]]*\[following\]##\" | tail -n1 | grep . || (echo \"Unable to determine latest release version from ${url_49}\" >&2; exit 1)")"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_fetch_latest_version173_v0=''
+        return "${__status}"
+    fi
+    ret_fetch_latest_version173_v0="${command_8}"
+    return 0
+}
+
 # normalize_version(version: Text)
 normalize_version__174_v0() {
     local version_63="${1}"
@@ -292,81 +308,81 @@ download_file__175_v0() {
 }
 
 # download_file(url: Text, local_filename: Text)
-download_file__183_v0() {
+download_file__184_v0() {
     local url_95="${1}"
     local local_filename_96="${2}"
     echo "Downloading from ${url_95}..."
     wget -qO ${local_filename_96} ${url_95}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_download_file183_v0=''
+        ret_download_file184_v0=''
         return "${__status}"
     fi
 }
 
 # verify_sha256_from_manifest(checksum_url: Text, artifact_name: Text)
-verify_sha256_from_manifest__186_v0() {
+verify_sha256_from_manifest__187_v0() {
     local checksum_url_91="${1}"
     local artifact_name_92="${2}"
     echo "Checking sha256sum..."
     local manifest_filename_93=".checksum-manifest"
     local entry_filename_94=".checksum-entry"
-    download_file__183_v0 "${checksum_url_91}" "${manifest_filename_93}"
+    download_file__184_v0 "${checksum_url_91}" "${manifest_filename_93}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_verify_sha256_from_manifest186_v0=''
+        ret_verify_sha256_from_manifest187_v0=''
         return "${__status}"
     fi
-    local command_8
-    command_8="$(grep -F "  ${artifact_name_92}" ${manifest_filename_93} | grep -Fv "  ${artifact_name_92}.gz" || true)"
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        ret_verify_sha256_from_manifest186_v0=''
-        return "${__status}"
-    fi
-    local checksum_entries_97="${command_8}"
     local command_9
-    command_9="$(printf "%s" "${checksum_entries_97}" | grep -c . || true)"
+    command_9="$(grep -F "  ${artifact_name_92}" ${manifest_filename_93} | grep -Fv "  ${artifact_name_92}.gz" || true)"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_verify_sha256_from_manifest186_v0=''
+        ret_verify_sha256_from_manifest187_v0=''
         return "${__status}"
     fi
-    local match_count_98="${command_9}"
+    local checksum_entries_97="${command_9}"
+    local command_10
+    command_10="$(printf "%s" "${checksum_entries_97}" | grep -c . || true)"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_verify_sha256_from_manifest187_v0=''
+        return "${__status}"
+    fi
+    local match_count_98="${command_10}"
     if [ "$([ "_${match_count_98}" == "_1" ]; echo $?)" != 0 ]; then
         echo_error__138_v0 "Checksum manifest must contain exactly one entry for ${artifact_name_92}" 1
-        ret_verify_sha256_from_manifest186_v0=''
+        ret_verify_sha256_from_manifest187_v0=''
         return 1
     fi
     printf "%s
 " "${checksum_entries_97}" > ${entry_filename_94}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_verify_sha256_from_manifest186_v0=''
+        ret_verify_sha256_from_manifest187_v0=''
         return "${__status}"
     fi
     sha256sum -c ${entry_filename_94}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_verify_sha256_from_manifest186_v0=''
+        ret_verify_sha256_from_manifest187_v0=''
         return "${__status}"
     fi
     rm -f ${entry_filename_94}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_verify_sha256_from_manifest186_v0=''
+        ret_verify_sha256_from_manifest187_v0=''
         return "${__status}"
     fi
     rm -f ${manifest_filename_93}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_verify_sha256_from_manifest186_v0=''
+        ret_verify_sha256_from_manifest187_v0=''
         return "${__status}"
     fi
 }
 
 # install_binary(file_name: Text, binary_name: Text, install_dir: Text)
-install_binary__190_v0() {
+install_binary__191_v0() {
     local file_name_109="${1}"
     local binary_name_110="${2}"
     local install_dir_111="${3}"
@@ -374,36 +390,36 @@ install_binary__190_v0() {
     file_chmod__47_v0 "${file_name_109}" "+x"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_binary190_v0=''
+        ret_install_binary191_v0=''
         return "${__status}"
     fi
     mv "${file_name_109}" "${install_dir_111}/${binary_name_110}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_binary190_v0=''
+        ret_install_binary191_v0=''
         return "${__status}"
     fi
 }
 
 # cleanup_temp_dir(temp_dir: Text)
-cleanup_temp_dir__191_v0() {
+cleanup_temp_dir__192_v0() {
     local temp_dir_116="${1}"
     cd "-"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cleanup_temp_dir191_v0=''
+        ret_cleanup_temp_dir192_v0=''
         return "${__status}"
     fi
     rm -rf /var/lib/apt/lists/*
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cleanup_temp_dir191_v0=''
+        ret_cleanup_temp_dir192_v0=''
         return "${__status}"
     fi
     rm -rf ${temp_dir_116}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cleanup_temp_dir191_v0=''
+        ret_cleanup_temp_dir192_v0=''
         return "${__status}"
     fi
 }
@@ -413,22 +429,6 @@ __BINARY_NAME_3="lefthook"
 __REPO_OWNER_4="evilmartians"
 __REPO_NAME_5="lefthook"
 base_packages_6=("ca-certificates" "wget")
-# fetch_latest_version(repo_owner: Text, repo_name: Text)
-fetch_latest_version__194_v0() {
-    local repo_owner_47="${1}"
-    local repo_name_48="${2}"
-    local url_49="https://github.com/${repo_owner_47}/${repo_name_48}/releases/latest"
-    local command_11
-    command_11="$(bash -o pipefail -c "(wget -S --max-redirect=0 --spider '${url_49}' 2>&1 || true) | sed -n \"s#^[[:space:]]*[Ll]ocation:[[:space:]]*.*/##p\" | tail -n1 | grep . || (echo \"Unable to determine latest Lefthook release version from ${url_49}\" >&2; exit 1)")"
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        ret_fetch_latest_version194_v0=''
-        return "${__status}"
-    fi
-    ret_fetch_latest_version194_v0="${command_11}"
-    return 0
-}
-
 prepare__161_v0 
 __status=$?
 if [ "${__status}" != 0 ]; then
@@ -444,12 +444,12 @@ if [ "$([ "_${version_41}" != "_latest" ]; echo $?)" != 0 ]; then
     if [ "${__status}" != 0 ]; then
         exit "${__status}"
     fi
-    fetch_latest_version__194_v0 "${__REPO_OWNER_4}" "${__REPO_NAME_5}"
+    fetch_latest_version__173_v0 "${__REPO_OWNER_4}" "${__REPO_NAME_5}"
     __status=$?
     if [ "${__status}" != 0 ]; then
         exit "${__status}"
     fi
-    version_41="${ret_fetch_latest_version194_v0}"
+    version_41="${ret_fetch_latest_version173_v0}"
 else
     ensure_packages__165_v0 base_packages_6[@]
     __status=$?
@@ -487,18 +487,18 @@ __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-verify_sha256_from_manifest__186_v0 "${release_url_75}/${__BINARY_NAME_3}_checksums.txt" "${filename_74}"
+verify_sha256_from_manifest__187_v0 "${release_url_75}/${__BINARY_NAME_3}_checksums.txt" "${filename_74}"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-install_binary__190_v0 "${filename_74}" "${__BINARY_NAME_3}" "/usr/local/bin"
+install_binary__191_v0 "${filename_74}" "${__BINARY_NAME_3}" "/usr/local/bin"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
 # Clean up
-cleanup_temp_dir__191_v0 "${temp_dir_70}"
+cleanup_temp_dir__192_v0 "${temp_dir_70}"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"

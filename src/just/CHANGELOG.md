@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [Unreleased]
+
+### Changed
+
+- Resolve `latest` releases via GitHub release redirects without requiring `curl` or `jq`
+
 ## [0.1.0] - 2026-06-02
 
 Initial release - supports version property including "latest"
@@ -14,4 +20,5 @@ Initial release - supports version property including "latest"
 [semantic versioning]: https://semver.org/spec/v2.0.0.html
 
 <!-- Versions -->
+[Unreleased]: https://github.com/NicoVIII/devcontainer-features/compare/just-v0.1.0...HEAD
 [0.1.0]: https://github.com/NicoVIII/devcontainer-features/releases/tag/just-v0.1.0

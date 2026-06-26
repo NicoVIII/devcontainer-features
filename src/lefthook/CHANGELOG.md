@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning].
 ### Changed
 
 - Update amber to 0.6.0-alpha
+- Resolve `latest` releases via the shared GitHub release redirect lookup
 
 ## [0.1.0] - 2026-04-19
 
@@ -20,4 +21,5 @@ Initial release - supports version property including "latest"
 [semantic versioning]: https://semver.org/spec/v2.0.0.html
 
 <!-- Versions -->
+[Unreleased]: https://github.com/NicoVIII/devcontainer-features/compare/lefthook-v0.1.0...HEAD
 [0.1.0]: https://github.com/NicoVIII/devcontainer-features/releases/tag/lefthook-v0.1.0

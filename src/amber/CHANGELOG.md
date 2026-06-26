@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning].
 ### Changed
 
 - Update amber to 0.6.0-alpha
+- Resolve `latest` releases via GitHub release redirects without requiring `curl` or `jq`
 
 ## [0.1.1] - 2026-04-05
 

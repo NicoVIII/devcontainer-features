@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning].
 ### Changed
 
 - Update amber to 0.6.0-alpha
+- Resolve `latest` releases via GitHub release redirects without requiring `curl` or `jq`
 
 ## [0.2.0] - 2026-04-04
 
@@ -26,5 +27,6 @@ Initial release - supports version property including "latest"
 [semantic versioning]: https://semver.org/spec/v2.0.0.html
 
 <!-- Versions -->
+[Unreleased]: https://github.com/NicoVIII/devcontainer-features/compare/gleam-v0.2.0...HEAD
 [0.2.0]: https://github.com/NicoVIII/devcontainer-features/compare/gleam-v0.1.0...gleam-v0.2.0
 [0.1.0]: https://github.com/NicoVIII/devcontainer-features/releases/tag/gleam-v0.1.0

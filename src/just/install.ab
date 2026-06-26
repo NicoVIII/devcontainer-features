@@ -18,7 +18,7 @@ main {
 
     // Ensure necessary packages
     if version == "latest" {
-        ensure_packages(base_packages + ["jq", "curl"])?
+        ensure_packages(base_packages)?
         version = fetch_latest_version(REPO_OWNER, REPO_NAME)?
     } else {
         ensure_packages(base_packages)?
