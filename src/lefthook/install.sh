@@ -334,7 +334,7 @@ verify_sha256_from_manifest__187_v0() {
         return "${__status}"
     fi
     local command_9
-    command_9="$(grep -F "  ${artifact_name_92}" ${manifest_filename_93} | grep -Fv "  ${artifact_name_92}.gz" || true)"
+    command_9="$(awk -v name="${artifact_name_92}" '$2 == name' ${manifest_filename_93})"
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_verify_sha256_from_manifest187_v0=''

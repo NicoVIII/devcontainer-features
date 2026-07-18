@@ -14,7 +14,7 @@ pub fun verify_sha256_from_manifest(checksum_url: Text, artifact_name: Text): Nu
     const entry_filename = ".checksum-entry"
     download_file(checksum_url, manifest_filename)?
 
-    const checksum_entries = $ grep -F "  {artifact_name}" {manifest_filename} | grep -Fv "  {artifact_name}.gz" || true $?
+    const checksum_entries = $ awk -v name="{artifact_name}" '\$2 == name' {manifest_filename} $?
 
     const match_count = $ printf "%s" "{checksum_entries}" | grep -c . || true $?
     if match_count != "1" {
