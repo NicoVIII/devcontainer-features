@@ -1,0 +1,14 @@
+{
+    "debian": {
+        "image": "debian:latest",
+        "features": {
+            "claude-mount": {}
+        }
+    },
+    "ubuntu": {
+        "image": "ubuntu:latest",
+        "features": {
+            "claude-mount": {}
+        }
+    }
+}

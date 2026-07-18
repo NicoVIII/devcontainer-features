@@ -51,6 +51,7 @@
             "description": "A available feature inside of this repo",
             "options": [
                 "amber",
+                "claude-mount",
                 "gleam",
                 "just",
                 "lefthook",

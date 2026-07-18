@@ -1,0 +1,14 @@
+{
+    "name": "Claude config mount",
+    "id": "claude-mount",
+    "version": "0.1.0",
+    "description": "Bind-mounts the host's ~/.claude into the container so Claude Code skills, settings, memory and login carry over.",
+    "documentationURL": "https://github.com/NicoVIII/devcontainer-features/tree/main/src/claude-mount",
+    "mounts": [
+        {
+            "source": "${localEnv:HOME}/.claude",
+            "target": "/mnt/host-claude",
+            "type": "bind"
+        }
+    ]
+}

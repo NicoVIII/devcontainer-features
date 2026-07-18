@@ -1,0 +1,21 @@
+import { prepare } from "../../lib/core.ab"
+import { read_param } from "../../lib/params.ab"
+
+// The devcontainer CLI bind-mounts the host's ~/.claude here (see the "mounts" entry in
+// devcontainer-feature.json). A neutral, user-independent path keeps the symlink target
+// stable regardless of which remote user the base image ships with.
+const MOUNT_PATH = "/mnt/host-claude"
+
+main {
+    prepare()?
+
+    // _REMOTE_USER_HOME is injected by the devcontainer CLI and differs per base image
+    // (e.g. /root, /home/vscode). Symlinking here makes ~/.claude resolve to the mount.
+    const home = read_param("_REMOTE_USER_HOME", "/root")
+    const link = "{home}/.claude"
+
+    echo("Linking {link} -> {MOUNT_PATH} ...")
+    $ ln -sfn "{MOUNT_PATH}" "{link}" $?
+
+    echo("Done!")
+}
