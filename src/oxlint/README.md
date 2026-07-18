@@ -15,7 +15,7 @@ Oxlint is a high-performance linter for JavaScript and TypeScript built on the O
 
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
-| version | The version of Oxlint to install. Use 'latest' to install the latest version. | string | latest |
+| version | The version of Oxlint to install. Installing 'latest' is not supported yet. | string | 1.68.0 |
 
 ## Customizations
 

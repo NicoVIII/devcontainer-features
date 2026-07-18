@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning].
 
 - Update amber to 0.6.0-alpha
 
+### Fixed
+
+- Change the default version from "latest" (which is not supported and failed the install) to a pinned version
+
 ## [0.1.0] - 2026-06-02
 
 Initial release - supports version property excluding "latest"

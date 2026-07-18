@@ -7,11 +7,11 @@
     "options": {
         "version": {
             "type": "string",
-            "description": "The version of Oxlint to install. Use 'latest' to install the latest version.",
+            "description": "The version of Oxlint to install. Installing 'latest' is not supported yet.",
             "proposals": [
                 "1.68.0"
             ],
-            "default": "latest"
+            "default": "1.68.0"
         }
     },
     "customizations": {
