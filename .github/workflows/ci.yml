@@ -32,11 +32,20 @@ jobs:
       - run: npm install -g @devcontainers/cli
         name: Install devcontainer CLI
 
+      # Note: "find -exec ... \;" would ignore failures, so loop explicitly
       - name: Check Amber library
-        run: find ./lib -name "*.ab" -print -exec amber check {} \;
+        run: |
+          for file in $(find ./lib -name "*.ab"); do
+            echo "$file"
+            amber check "$file"
+          done
 
       - name: Build Amber feature install scripts
-        run: find ./src -name "install.ab" -print -exec amber build {} \;
+        run: |
+          for file in $(find ./src -name "install.ab"); do
+            echo "$file"
+            amber build "$file"
+          done
 
       - name: Generate documentation
         run: |

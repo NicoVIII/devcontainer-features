@@ -6,13 +6,13 @@
         {
             "label": "Check",
             "type": "shell",
-            "command": "find ./lib -name \"*.ab\" -print -exec amber check {} \\; && find ./src -name \"*.ab\" -print -exec amber check {} \\;",
+            "command": "set -e; for f in $(find ./lib ./src -name '*.ab'); do echo \"$f\"; amber check \"$f\"; done",
             "problemMatcher": []
         },
         {
             "label": "Build",
             "type": "shell",
-            "command": "find ./src -name \"*.ab\" -print -exec amber build {} \\;",
+            "command": "set -e; for f in $(find ./src -name '*.ab'); do echo \"$f\"; amber build \"$f\"; done",
             "group": {
                 "kind": "build",
                 "isDefault": true
