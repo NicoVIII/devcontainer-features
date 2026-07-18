@@ -22,8 +22,9 @@ authenticated. Any session state the container writes (e.g. `projects/`, `todos/
 your host `~/.claude` as well; `projects/` is keyed by working-directory path, so container
 paths produce additional entries next to your host ones.
 
-The mount source is your host `~/.claude`. If it does not exist, the container runtime creates
-an empty directory in its place.
+The mount source is your host `~/.claude` and it **must exist** on the host: the bind mount
+uses `docker --mount`, which aborts container creation if the source path is missing. If you
+have never run Claude Code on the host, create it first with `mkdir -p ~/.claude`.
 
 
 ---
