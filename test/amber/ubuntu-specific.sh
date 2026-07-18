@@ -7,7 +7,7 @@ source dev-container-features-test-lib
 # Feature-specific tests
 # Check if correct version was installed.
 # The 'check' command comes from the dev-container-features-test-lib.
-check "amber --version" amber --version | grep "0.5.0-alpha"
+check "amber --version" bash -c "amber --version | grep -F '0.5.0-alpha'"
 
 # Report result
 # If any of the checks above exited with a non-zero exit code, the test will fail.

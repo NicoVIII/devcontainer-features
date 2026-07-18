@@ -6,7 +6,7 @@ source dev-container-features-test-lib
 
 # Feature-specific tests
 # The 'check' command comes from the dev-container-features-test-lib.
-check "lefthook version" lefthook version | grep "2.1.5"
+check "lefthook version" bash -c "lefthook version | grep -F '2.1.5'"
 
 # Report result
 # If any of the checks above exited with a non-zero exit code, the test will fail.
