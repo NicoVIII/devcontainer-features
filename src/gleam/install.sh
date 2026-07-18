@@ -227,7 +227,7 @@ ensure_packages__165_v0() {
         # At least some packages are missing
         # We first check, if we need an update
         local command_7
-        command_7="$(find /var/lib/apt/lists/* | wc -l)"
+        command_7="$(find /var/lib/apt/lists -mindepth 1 2> /dev/null | wc -l)"
         __status=$?
         if [ "${__status}" != 0 ]; then
             ret_ensure_packages165_v0=''
