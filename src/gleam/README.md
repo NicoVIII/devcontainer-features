@@ -23,9 +23,8 @@ Gleam is a friendly language for building type-safe systems that scale!
 
 - `gleam.gleam`
 
-This feature installs only the gleam tool. It needs erlang to be installed in the container for it to work.
-You can either use an additional feature to install erlang or install it manually. For more information on how to install erlang, please refer to the official documentation:
-https://gleam.run/install/ubuntu-linux/erlang/
+This feature installs only the `gleam` binary. Gleam needs Erlang at runtime, so install that
+separately — through another feature or by hand: https://gleam.run/install/ubuntu-linux/erlang/
 
 
 ---
