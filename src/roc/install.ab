@@ -1,0 +1,68 @@
+import { prepare } from "../../lib/core.ab"
+import { get_architecture, ensure_packages } from "../../lib/system.ab"
+import { read_param } from "../../lib/params.ab"
+import { fetch_latest_version, download_file } from "../../lib/download.ab"
+import { extract_archive, install_binary, cleanup_temp_dir } from "../../lib/install.ab"
+import { starts_with, slice } from "std/text"
+
+// Config
+const BINARY_NAME = "roc"
+const REPO_OWNER = "roc-lang"
+const REPO_NAME = "nightlies"
+const base_packages = ["ca-certificates", "wget"]
+
+/// Accepts both the release tag ("nightly-2026-08-22-db56022") and the bare
+/// "<date>-<sha>" suffix the archive names use.
+fun normalize_nightly_version(version: Text): Text {
+    if starts_with(version, "nightly-") {
+        return slice(version, 8)
+    }
+    return version
+}
+
+/// Roc calls its linux arm64 build "arm64", not the "aarch64" the shared helper returns.
+fun get_roc_architecture(): Text? {
+    const arch = get_architecture()?
+    if arch == "aarch64" {
+        return "arm64"
+    }
+    return arch
+}
+
+main {
+    prepare()?
+
+    // Read parameters
+    let version = read_param("VERSION", "latest")
+
+    // Ensure necessary packages
+    if version == "latest" {
+        ensure_packages(base_packages + ["jq", "curl"])?
+        version = fetch_latest_version(REPO_OWNER, REPO_NAME)?
+    } else {
+        ensure_packages(base_packages)?
+    }
+
+    version = normalize_nightly_version(version)
+
+    // Setup temporary directory
+    const temp_dir = "/tmp/roc-feature"
+    echo("Preparing installation in {temp_dir}...")
+    $ mkdir -p {temp_dir} $?
+    cd(temp_dir)?
+
+    const arch = get_roc_architecture()?
+    // The archive unpacks into a directory named exactly like the archive itself
+    const dir_name = "roc_nightly-linux_{arch}-{version}"
+    const filename = "{dir_name}.tar.gz"
+    const url = "https://github.com/{REPO_OWNER}/{REPO_NAME}/releases/download/nightly-{version}/{filename}"
+
+    echo("Installing {BINARY_NAME} {version}...")
+    download_file(url, filename)?
+    extract_archive(filename)?
+    install_binary("{dir_name}/{BINARY_NAME}", BINARY_NAME, "/usr/local/bin")?
+
+    // Clean up
+    cleanup_temp_dir(temp_dir)?
+    echo("Done!")
+}

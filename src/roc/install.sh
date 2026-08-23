@@ -1,0 +1,464 @@
+#!/usr/bin/env bash
+# Written in [Amber](https://amber-lang.com/)
+# version: 0.6.0-alpha
+[ "$EUID" -ne 0 ] && { { command -v sudo >/dev/null 2>&1 && __sudo=sudo; } || { command -v doas >/dev/null 2>&1 && __sudo=doas; }; }
+if [ -n "$ZSH_VERSION" ]; then
+    EXEC_SHELL="zsh"
+    IFS='.' read -A EXEC_SHELL_VERSION <<< "$ZSH_VERSION"
+elif [ -n "$KSH_VERSION" ]; then
+    EXEC_SHELL="ksh"
+    __exec_shell_version="${.sh.version##*/}"
+    IFS='.' read -a EXEC_SHELL_VERSION <<< "${__exec_shell_version%% *}"
+else
+    EXEC_SHELL="bash"
+    EXEC_SHELL_VERSION=("${BASH_VERSINFO[0]}" "${BASH_VERSINFO[1]}" "${BASH_VERSINFO[2]}")
+fi
+# starts_with(text: Text, prefix: Text)
+starts_with__22_v0() {
+    local text_64="${1}"
+    local prefix_65="${2}"
+    [[ "${text_64}" == "${prefix_65}"* ]]
+    __status=$?
+    ret_starts_with22_v0="$(( __status == 0 ))"
+    return 0
+}
+
+# slice(text: Text, index: Int, length: Int)
+slice__24_v0() {
+    local text_66="${1}"
+    local index_67="${2}"
+    local length_68="${3}"
+    local result_69=""
+    if [ "$(( length_68 == 0 ))" != 0 ]; then
+        local __length_0="${text_66}"
+        length_68="$(( ${#__length_0} - index_67 ))"
+    fi
+    if [ "$(( length_68 <= 0 ))" != 0 ]; then
+        ret_slice24_v0="${result_69}"
+        return 0
+    fi
+    result_69="${text_66: ${index_67}: ${length_68}}"
+    __status=$?
+    ret_slice24_v0="${result_69}"
+    return 0
+}
+
+# file_exists(path: Text)
+file_exists__39_v0() {
+    local path_101="${1}"
+    [ -f "${path_101}" ]
+    __status=$?
+    ret_file_exists39_v0="$(( __status == 0 ))"
+    return 0
+}
+
+# file_chmod(path: Text, mode: Text)
+file_chmod__47_v0() {
+    local path_99="${1}"
+    local mode_100="${2}"
+    file_exists__39_v0 "${path_99}"
+    local ret_file_exists39_v0__153_8="${ret_file_exists39_v0}"
+    if [ "${ret_file_exists39_v0__153_8}" != 0 ]; then
+        chmod "${mode_100}" "${path_99}"
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_file_chmod47_v0=''
+            return "${__status}"
+        fi
+        ret_file_chmod47_v0=''
+        return 0
+    fi
+    echo "The file ${path_99} doesn't exist"'!'""
+    ret_file_chmod47_v0=''
+    return 1
+}
+
+# env_var_set(name: Text, val: Text)
+env_var_set__119_v0() {
+    local name_32="${1}"
+    local val_33="${2}"
+    export $name_32="$val_33" 2> /dev/null
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_env_var_set119_v0=''
+        return "${__status}"
+    fi
+}
+
+# env_var_get(name: Text)
+env_var_get__120_v0() {
+    local name_40="${1}"
+    if [ "$([ "_${EXEC_SHELL}" != "_bash" ]; echo $?)" != 0 ]; then
+        local command_1
+        command_1="$(printf "%s
+" "${!name_40}")"
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_env_var_get120_v0=''
+            return "${__status}"
+        fi
+        ret_env_var_get120_v0="${command_1}"
+        return 0
+    elif [ "$([ "_${EXEC_SHELL}" != "_zsh" ]; echo $?)" != 0 ]; then
+        local command_2
+        command_2="$(printf "%s
+" "${(P)name_40}")"
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_env_var_get120_v0=''
+            return "${__status}"
+        fi
+        ret_env_var_get120_v0="${command_2}"
+        return 0
+    elif [ "$([ "_${EXEC_SHELL}" != "_ksh" ]; echo $?)" != 0 ]; then
+        local command_3
+        command_3="$(eval "echo \${$name_40}")"
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_env_var_get120_v0=''
+            return "${__status}"
+        fi
+        ret_env_var_get120_v0="${command_3}"
+        return 0
+    fi
+}
+
+# printf(format: Text, args: [Text])
+printf__128_v0() {
+    local format_30="${1}"
+    local args_31=("${!2}")
+    args_31=("${format_30}" "${args_31[@]}")
+    __status=$?
+    printf "${args_31[@]}"
+    __status=$?
+}
+
+# echo_error(message: Text, exit_code: Int)
+echo_error__138_v0() {
+    local message_28="${1}"
+    local exit_code_29="${2}"
+    local array_4=("${message_28}")
+    printf__128_v0 "\\x1b[1;3;97;41m%s\\x1b[0m
+" array_4[@]
+    if [ "$(( exit_code_29 > 0 ))" != 0 ]; then
+        exit "${exit_code_29}"
+    fi
+}
+
+# ensure_run_as_root()
+ensure_run_as_root__159_v0() {
+    local command_5
+    command_5="$(id -u)"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_ensure_run_as_root159_v0=''
+        return "${__status}"
+    fi
+    local id_27="${command_5}"
+    if [ "$([ "_${id_27}" == "_0" ]; echo $?)" != 0 ]; then
+        echo_error__138_v0 "This script must be run as root" 1
+        ret_ensure_run_as_root159_v0=''
+        return 1
+    fi
+}
+
+# clean_up()
+clean_up__160_v0() {
+    rm -rf /var/lib/apt/lists/*
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_clean_up160_v0=''
+        return "${__status}"
+    fi
+}
+
+# prepare()
+prepare__161_v0() {
+    ensure_run_as_root__159_v0 
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_prepare161_v0=''
+        return "${__status}"
+    fi
+    clean_up__160_v0 
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_prepare161_v0=''
+        return "${__status}"
+    fi
+    env_var_set__119_v0 "DEBIAN_FRONTEND" "noninteractive"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_prepare161_v0=''
+        return "${__status}"
+    fi
+}
+
+# get_architecture()
+get_architecture__164_v0() {
+    local command_6
+    command_6="$(dpkg --print-architecture)"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_get_architecture164_v0=''
+        return "${__status}"
+    fi
+    local arch_74="${command_6}"
+    if [ "$([ "_${arch_74}" != "_amd64" ]; echo $?)" != 0 ]; then
+        ret_get_architecture164_v0="x86_64"
+        return 0
+    elif [ "$([ "_${arch_74}" != "_arm64" ]; echo $?)" != 0 ]; then
+        ret_get_architecture164_v0="aarch64"
+        return 0
+    else
+        echo_error__138_v0 "Unsupported architecture: ${arch_74}" 1
+        ret_get_architecture164_v0=''
+        return 1
+    fi
+}
+
+# ensure_packages(packages: [Text])
+ensure_packages__165_v0() {
+    local packages_43=("${!1}")
+    # Check if packages are already installed
+    dpkg -s ${packages_43[@]} > /dev/null 2>&1
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        # At least some packages are missing
+        # We first check, if we need an update
+        local command_7
+        command_7="$(find /var/lib/apt/lists -mindepth 1 2> /dev/null | wc -l)"
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_ensure_packages165_v0=''
+            return "${__status}"
+        fi
+        if [ "$([ "_${command_7}" != "_0" ]; echo $?)" != 0 ]; then
+            echo "Running apt-get update..."
+            apt-get update -y
+            __status=$?
+            if [ "${__status}" != 0 ]; then
+                ret_ensure_packages165_v0=''
+                return "${__status}"
+            fi
+        fi
+        apt-get -y install --no-install-recommends ${packages_43[@]}
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_ensure_packages165_v0=''
+            return "${__status}"
+        fi
+    fi
+}
+
+# read_param(name: Text, default: Text)
+read_param__169_v0() {
+    local name_38="${1}"
+    local default_39="${2}"
+    env_var_get__120_v0 "${name_38}"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        :
+    fi
+    ret_read_param169_v0="${ret_env_var_get120_v0}"
+    return 0
+}
+
+# fetch_latest_version(repo_owner: Text, repo_name: Text)
+fetch_latest_version__173_v0() {
+    local repo_owner_47="${1}"
+    local repo_name_48="${2}"
+    local url_49="https://api.github.com/repos/${repo_owner_47}/${repo_name_48}/releases/latest"
+    local command_8
+    command_8="$(curl -sL ${url_49} | jq -r .tag_name)"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_fetch_latest_version173_v0=''
+        return "${__status}"
+    fi
+    ret_fetch_latest_version173_v0="${command_8}"
+    return 0
+}
+
+# download_file(url: Text, local_filename: Text)
+download_file__175_v0() {
+    local url_82="${1}"
+    local local_filename_83="${2}"
+    echo "Downloading from ${url_82}..."
+    wget -qO ${local_filename_83} ${url_82}
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_download_file175_v0=''
+        return "${__status}"
+    fi
+}
+
+# extract_archive(filename: Text)
+extract_archive__179_v0() {
+    local filename_85="${1}"
+    echo "Extracting ${filename_85}..."
+    tar -xf ${filename_85}
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_extract_archive179_v0=''
+        return "${__status}"
+    fi
+}
+
+# install_binary(file_name: Text, binary_name: Text, install_dir: Text)
+install_binary__180_v0() {
+    local file_name_96="${1}"
+    local binary_name_97="${2}"
+    local install_dir_98="${3}"
+    echo "Installing ${file_name_96} as ${binary_name_97} to ${install_dir_98}..."
+    file_chmod__47_v0 "${file_name_96}" "+x"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_install_binary180_v0=''
+        return "${__status}"
+    fi
+    mv "${file_name_96}" "${install_dir_98}/${binary_name_97}"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_install_binary180_v0=''
+        return "${__status}"
+    fi
+}
+
+# cleanup_temp_dir(temp_dir: Text)
+cleanup_temp_dir__181_v0() {
+    local temp_dir_103="${1}"
+    cd "-"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_cleanup_temp_dir181_v0=''
+        return "${__status}"
+    fi
+    rm -rf /var/lib/apt/lists/*
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_cleanup_temp_dir181_v0=''
+        return "${__status}"
+    fi
+    rm -rf ${temp_dir_103}
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_cleanup_temp_dir181_v0=''
+        return "${__status}"
+    fi
+}
+
+# Config
+__BINARY_NAME_3="roc"
+__REPO_OWNER_4="roc-lang"
+__REPO_NAME_5="nightlies"
+base_packages_6=("ca-certificates" "wget")
+# normalize_nightly_version(version: Text)
+normalize_nightly_version__187_v0() {
+    local version_63="${1}"
+    starts_with__22_v0 "${version_63}" "nightly-"
+    local ret_starts_with22_v0__17_8="${ret_starts_with22_v0}"
+    if [ "${ret_starts_with22_v0__17_8}" != 0 ]; then
+        slice__24_v0 "${version_63}" 8 0
+        ret_normalize_nightly_version187_v0="${ret_slice24_v0}"
+        return 0
+    fi
+    ret_normalize_nightly_version187_v0="${version_63}"
+    return 0
+}
+
+# get_roc_architecture()
+get_roc_architecture__188_v0() {
+    get_architecture__164_v0 
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_get_roc_architecture188_v0=''
+        return "${__status}"
+    fi
+    local arch_75="${ret_get_architecture164_v0}"
+    if [ "$([ "_${arch_75}" != "_aarch64" ]; echo $?)" != 0 ]; then
+        ret_get_roc_architecture188_v0="arm64"
+        return 0
+    fi
+    ret_get_roc_architecture188_v0="${arch_75}"
+    return 0
+}
+
+prepare__161_v0 
+__status=$?
+if [ "${__status}" != 0 ]; then
+    exit "${__status}"
+fi
+# Read parameters
+read_param__169_v0 "VERSION" "latest"
+version_41="${ret_read_param169_v0}"
+# Ensure necessary packages
+if [ "$([ "_${version_41}" != "_latest" ]; echo $?)" != 0 ]; then
+    array_11=("jq" "curl")
+    array_add_12=("${base_packages_6[@]}" "${array_11[@]}")
+    ensure_packages__165_v0 array_add_12[@]
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        exit "${__status}"
+    fi
+    fetch_latest_version__173_v0 "${__REPO_OWNER_4}" "${__REPO_NAME_5}"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        exit "${__status}"
+    fi
+    version_41="${ret_fetch_latest_version173_v0}"
+else
+    ensure_packages__165_v0 base_packages_6[@]
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        exit "${__status}"
+    fi
+fi
+normalize_nightly_version__187_v0 "${version_41}"
+version_41="${ret_normalize_nightly_version187_v0}"
+# Setup temporary directory
+temp_dir_70="/tmp/roc-feature"
+echo "Preparing installation in ${temp_dir_70}..."
+mkdir -p ${temp_dir_70}
+__status=$?
+if [ "${__status}" != 0 ]; then
+    exit "${__status}"
+fi
+cd "${temp_dir_70}"
+__status=$?
+if [ "${__status}" != 0 ]; then
+    exit "${__status}"
+fi
+get_roc_architecture__188_v0 
+__status=$?
+if [ "${__status}" != 0 ]; then
+    exit "${__status}"
+fi
+arch_76="${ret_get_roc_architecture188_v0}"
+# The archive unpacks into a directory named exactly like the archive itself
+dir_name_77="roc_nightly-linux_${arch_76}-${version_41}"
+filename_78="${dir_name_77}.tar.gz"
+url_79="https://github.com/${__REPO_OWNER_4}/${__REPO_NAME_5}/releases/download/nightly-${version_41}/${filename_78}"
+echo "Installing ${__BINARY_NAME_3} ${version_41}..."
+download_file__175_v0 "${url_79}" "${filename_78}"
+__status=$?
+if [ "${__status}" != 0 ]; then
+    exit "${__status}"
+fi
+extract_archive__179_v0 "${filename_78}"
+__status=$?
+if [ "${__status}" != 0 ]; then
+    exit "${__status}"
+fi
+install_binary__180_v0 "${dir_name_77}/${__BINARY_NAME_3}" "${__BINARY_NAME_3}" "/usr/local/bin"
+__status=$?
+if [ "${__status}" != 0 ]; then
+    exit "${__status}"
+fi
+# Clean up
+cleanup_temp_dir__181_v0 "${temp_dir_70}"
+__status=$?
+if [ "${__status}" != 0 ]; then
+    exit "${__status}"
+fi
+echo "Done"'!'""

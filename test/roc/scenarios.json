@@ -1,0 +1,38 @@
+{
+    "debian-default": {
+        "image": "debian:latest",
+        "features": {
+            "roc": {}
+        }
+    },
+    "debian-latest": {
+        "image": "debian:latest",
+        "features": {
+            "roc": { "version": "latest" }
+        }
+    },
+    "debian-specific": {
+        "image": "debian:latest",
+        "features": {
+            "roc": { "version": "2026-08-06-61bbb59" }
+        }
+    },
+    "ubuntu-default": {
+        "image": "ubuntu:latest",
+        "features": {
+            "roc": {}
+        }
+    },
+    "ubuntu-latest": {
+        "image": "ubuntu:latest",
+        "features": {
+            "roc": { "version": "latest" }
+        }
+    },
+    "ubuntu-specific": {
+        "image": "ubuntu:latest",
+        "features": {
+            "roc": { "version": "2026-08-06-61bbb59" }
+        }
+    }
+}

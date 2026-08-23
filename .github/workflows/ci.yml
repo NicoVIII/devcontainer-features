@@ -72,6 +72,7 @@ jobs:
       just_changed: ${{ steps.filter.outputs.just }}
       lefthook_changed: ${{ steps.filter.outputs.lefthook }}
       oxlint_changed: ${{ steps.filter.outputs.oxlint }}
+      roc_changed: ${{ steps.filter.outputs.roc }}
     steps:
       - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v4
@@ -108,6 +109,11 @@ jobs:
               - 'lib/**'
               - 'src/oxlint/**'
               - 'test/oxlint/**'
+            roc:
+              - '.github/workflows/**'
+              - 'lib/**'
+              - 'src/roc/**'
+              - 'test/roc/**'
 
   amber:
     needs: detect-changes
@@ -173,4 +179,15 @@ jobs:
     uses: ./.github/workflows/reusable-feature.yml
     with:
       feature_name: "oxlint"
+    secrets: inherit
+
+  roc:
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.roc_changed == 'true' || startsWith(github.ref, 'refs/tags/roc-v') }}
+    permissions:
+      contents: write
+      packages: write
+    uses: ./.github/workflows/reusable-feature.yml
+    with:
+      feature_name: "roc"
     secrets: inherit
