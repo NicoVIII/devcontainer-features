@@ -2,6 +2,7 @@ import { prepare } from "../../lib/core.ab"
 import { get_architecture, ensure_packages } from "../../lib/system.ab"
 import { read_param } from "../../lib/params.ab"
 import { fetch_latest_version, normalize_version, download_file } from "../../lib/download.ab"
+import { verify_sha256_from_manifest } from "../../lib/verify.ab"
 import { extract_archive, install_binary, cleanup_temp_dir } from "../../lib/install.ab"
 
 // Config
@@ -39,6 +40,7 @@ main {
 
     echo("Installing {BINARY_NAME} {version}...")
     download_file(url, filename)?
+    verify_sha256_from_manifest("{release_url}/SHA256SUMS", filename)?
     extract_archive(filename)?
     install_binary(BINARY_NAME, BINARY_NAME, "/usr/local/bin")?
 

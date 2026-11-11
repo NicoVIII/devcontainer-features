@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+### Added
+
+- Verify the downloaded archive against the release's `SHA256SUMS`
+
 ### Fixed
 
 - `latest` now fails with a clear error when the GitHub API lookup fails (e.g. rate limiting) instead of trying to download a version named "null"

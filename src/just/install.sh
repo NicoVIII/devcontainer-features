@@ -45,8 +45,8 @@ slice__24_v0() {
 
 # file_exists(path: Text)
 file_exists__39_v0() {
-    local path_101="${1}"
-    [ -f "${path_101}" ]
+    local path_119="${1}"
+    [ -f "${path_119}" ]
     __status=$?
     ret_file_exists39_v0="$(( __status == 0 ))"
     return 0
@@ -54,12 +54,12 @@ file_exists__39_v0() {
 
 # file_chmod(path: Text, mode: Text)
 file_chmod__47_v0() {
-    local path_99="${1}"
-    local mode_100="${2}"
-    file_exists__39_v0 "${path_99}"
+    local path_117="${1}"
+    local mode_118="${2}"
+    file_exists__39_v0 "${path_117}"
     local ret_file_exists39_v0__153_8="${ret_file_exists39_v0}"
     if [ "${ret_file_exists39_v0__153_8}" != 0 ]; then
-        chmod "${mode_100}" "${path_99}"
+        chmod "${mode_118}" "${path_117}"
         __status=$?
         if [ "${__status}" != 0 ]; then
             ret_file_chmod47_v0=''
@@ -68,7 +68,7 @@ file_chmod__47_v0() {
         ret_file_chmod47_v0=''
         return 0
     fi
-    echo "The file ${path_99} doesn't exist"'!'""
+    echo "The file ${path_117} doesn't exist"'!'""
     ret_file_chmod47_v0=''
     return 1
 }
@@ -343,57 +343,131 @@ download_file__177_v0() {
     fi
 }
 
-# extract_archive(filename: Text)
-extract_archive__182_v0() {
-    local filename_85="${1}"
-    echo "Extracting ${filename_85}..."
-    tar -xf ${filename_85}
+# download_file(url: Text, local_filename: Text)
+download_file__187_v0() {
+    local url_98="${1}"
+    local local_filename_99="${2}"
+    echo "Downloading from ${url_98}..."
+    wget -qO ${local_filename_99} ${url_98}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_extract_archive182_v0=''
+        ret_download_file187_v0=''
+        return "${__status}"
+    fi
+}
+
+# verify_sha256_from_manifest(checksum_url: Text, artifact_name: Text)
+verify_sha256_from_manifest__190_v0() {
+    local checksum_url_94="${1}"
+    local artifact_name_95="${2}"
+    echo "Checking sha256sum..."
+    local manifest_filename_96=".checksum-manifest"
+    local entry_filename_97=".checksum-entry"
+    download_file__187_v0 "${checksum_url_94}" "${manifest_filename_96}"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_verify_sha256_from_manifest190_v0=''
+        return "${__status}"
+    fi
+    local command_9
+    command_9="$(awk -v name="${artifact_name_95}" '$2 == name' ${manifest_filename_96})"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_verify_sha256_from_manifest190_v0=''
+        return "${__status}"
+    fi
+    local checksum_entries_100="${command_9}"
+    local command_10
+    command_10="$(printf "%s" "${checksum_entries_100}" | grep -c . || true)"
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_verify_sha256_from_manifest190_v0=''
+        return "${__status}"
+    fi
+    local match_count_101="${command_10}"
+    if [ "$([ "_${match_count_101}" == "_1" ]; echo $?)" != 0 ]; then
+        echo_error__138_v0 "Checksum manifest must contain exactly one entry for ${artifact_name_95}" 1
+        ret_verify_sha256_from_manifest190_v0=''
+        return 1
+    fi
+    printf "%s
+" "${checksum_entries_100}" > ${entry_filename_97}
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_verify_sha256_from_manifest190_v0=''
+        return "${__status}"
+    fi
+    sha256sum -c ${entry_filename_97}
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_verify_sha256_from_manifest190_v0=''
+        return "${__status}"
+    fi
+    rm -f ${entry_filename_97}
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_verify_sha256_from_manifest190_v0=''
+        return "${__status}"
+    fi
+    rm -f ${manifest_filename_96}
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_verify_sha256_from_manifest190_v0=''
+        return "${__status}"
+    fi
+}
+
+# extract_archive(filename: Text)
+extract_archive__193_v0() {
+    local filename_103="${1}"
+    echo "Extracting ${filename_103}..."
+    tar -xf ${filename_103}
+    __status=$?
+    if [ "${__status}" != 0 ]; then
+        ret_extract_archive193_v0=''
         return "${__status}"
     fi
 }
 
 # install_binary(file_name: Text, binary_name: Text, install_dir: Text)
-install_binary__183_v0() {
-    local file_name_96="${1}"
-    local binary_name_97="${2}"
-    local install_dir_98="${3}"
-    echo "Installing ${file_name_96} as ${binary_name_97} to ${install_dir_98}..."
-    file_chmod__47_v0 "${file_name_96}" "+x"
+install_binary__194_v0() {
+    local file_name_114="${1}"
+    local binary_name_115="${2}"
+    local install_dir_116="${3}"
+    echo "Installing ${file_name_114} as ${binary_name_115} to ${install_dir_116}..."
+    file_chmod__47_v0 "${file_name_114}" "+x"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_binary183_v0=''
+        ret_install_binary194_v0=''
         return "${__status}"
     fi
-    mv "${file_name_96}" "${install_dir_98}/${binary_name_97}"
+    mv "${file_name_114}" "${install_dir_116}/${binary_name_115}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_binary183_v0=''
+        ret_install_binary194_v0=''
         return "${__status}"
     fi
 }
 
 # cleanup_temp_dir(temp_dir: Text)
-cleanup_temp_dir__184_v0() {
-    local temp_dir_103="${1}"
+cleanup_temp_dir__195_v0() {
+    local temp_dir_121="${1}"
     cd "-"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cleanup_temp_dir184_v0=''
+        ret_cleanup_temp_dir195_v0=''
         return "${__status}"
     fi
     rm -rf /var/lib/apt/lists/*
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cleanup_temp_dir184_v0=''
+        ret_cleanup_temp_dir195_v0=''
         return "${__status}"
     fi
-    rm -rf ${temp_dir_103}
+    rm -rf ${temp_dir_121}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cleanup_temp_dir184_v0=''
+        ret_cleanup_temp_dir195_v0=''
         return "${__status}"
     fi
 }
@@ -413,9 +487,9 @@ read_param__170_v0 "VERSION" "latest"
 version_44="${ret_read_param170_v0}"
 # Ensure necessary packages
 if [ "$([ "_${version_44}" != "_latest" ]; echo $?)" != 0 ]; then
-    array_11=("jq" "curl")
-    array_add_12=("${base_packages_6[@]}" "${array_11[@]}")
-    ensure_packages__165_v0 array_add_12[@]
+    array_13=("jq" "curl")
+    array_add_14=("${base_packages_6[@]}" "${array_13[@]}")
+    ensure_packages__165_v0 array_add_14[@]
     __status=$?
     if [ "${__status}" != 0 ]; then
         exit "${__status}"
@@ -463,18 +537,23 @@ __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-extract_archive__182_v0 "${filename_77}"
+verify_sha256_from_manifest__190_v0 "${release_url_78}/SHA256SUMS" "${filename_77}"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
-install_binary__183_v0 "${__BINARY_NAME_3}" "${__BINARY_NAME_3}" "/usr/local/bin"
+extract_archive__193_v0 "${filename_77}"
+__status=$?
+if [ "${__status}" != 0 ]; then
+    exit "${__status}"
+fi
+install_binary__194_v0 "${__BINARY_NAME_3}" "${__BINARY_NAME_3}" "/usr/local/bin"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
 fi
 # Clean up
-cleanup_temp_dir__184_v0 "${temp_dir_73}"
+cleanup_temp_dir__195_v0 "${temp_dir_73}"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"
