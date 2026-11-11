@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [Unreleased]
+
+### Fixed
+
+- Fail the install when `~/.claude` already exists as a real directory or file instead of silently creating the link inside it
+
 ## [0.1.0] - 2026-07-18
 
 Initial release - bind-mounts the host's ~/.claude into the container and links it into the

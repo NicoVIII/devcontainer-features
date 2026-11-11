@@ -13,6 +13,35 @@ else
     EXEC_SHELL="bash"
     EXEC_SHELL_VERSION=("${BASH_VERSINFO[0]}" "${BASH_VERSINFO[1]}" "${BASH_VERSINFO[2]}")
 fi
+# env_var_test(name: Text)
+env_var_test__117_v0() {
+    local name_39="${1}"
+    if [ "$([ "_${EXEC_SHELL}" != "_zsh" ]; echo $?)" != 0 ]; then
+        [[ ! -z ${(P)name_39+z} ]]
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_env_var_test117_v0=0
+            return 0
+        fi
+    elif [ "$([ "_${EXEC_SHELL}" != "_bash" ]; echo $?)" != 0 ]; then
+        declare -p -- "${name_39}" > /dev/null 2> /dev/null
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_env_var_test117_v0=0
+            return 0
+        fi
+    elif [ "$([ "_${EXEC_SHELL}" != "_ksh" ]; echo $?)" != 0 ]; then
+        eval "[ \"\${$name_39+x}\" = x ]"
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            ret_env_var_test117_v0=0
+            return 0
+        fi
+    fi
+    ret_env_var_test117_v0=1
+    return 0
+}
+
 # env_var_set(name: Text, val: Text)
 env_var_set__119_v0() {
     local name_29="${1}"
@@ -27,11 +56,11 @@ env_var_set__119_v0() {
 
 # env_var_get(name: Text)
 env_var_get__120_v0() {
-    local name_37="${1}"
+    local name_40="${1}"
     if [ "$([ "_${EXEC_SHELL}" != "_bash" ]; echo $?)" != 0 ]; then
         local command_0
         command_0="$(printf "%s
-" "${!name_37}")"
+" "${!name_40}")"
         __status=$?
         if [ "${__status}" != 0 ]; then
             ret_env_var_get120_v0=''
@@ -42,7 +71,7 @@ env_var_get__120_v0() {
     elif [ "$([ "_${EXEC_SHELL}" != "_zsh" ]; echo $?)" != 0 ]; then
         local command_1
         command_1="$(printf "%s
-" "${(P)name_37}")"
+" "${(P)name_40}")"
         __status=$?
         if [ "${__status}" != 0 ]; then
             ret_env_var_get120_v0=''
@@ -52,7 +81,7 @@ env_var_get__120_v0() {
         return 0
     elif [ "$([ "_${EXEC_SHELL}" != "_ksh" ]; echo $?)" != 0 ]; then
         local command_2
-        command_2="$(eval "echo \${$name_37}")"
+        command_2="$(eval "echo \${$name_40}")"
         __status=$?
         if [ "${__status}" != 0 ]; then
             ret_env_var_get120_v0=''
@@ -135,15 +164,19 @@ prepare__161_v0() {
 }
 
 # read_param(name: Text, default: Text)
-read_param__164_v0() {
-    local name_35="${1}"
-    local default_36="${2}"
-    env_var_get__120_v0 "${name_35}"
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        :
+read_param__165_v0() {
+    local name_37="${1}"
+    local default_38="${2}"
+    # env_var_get succeeds with "" for an unset variable, so its failure cannot drive the fallback
+    env_var_test__117_v0 "${name_37}"
+    local ret_env_var_test117_v0__6_8="${ret_env_var_test117_v0}"
+    if [ "${ret_env_var_test117_v0__6_8}" != 0 ]; then
+        env_var_get__120_v0 "${name_37}"
+        __status=$?
+        ret_read_param165_v0="${ret_env_var_get120_v0}"
+        return 0
     fi
-    ret_read_param164_v0="${ret_env_var_get120_v0}"
+    ret_read_param165_v0="${default_38}"
     return 0
 }
 
@@ -158,11 +191,18 @@ if [ "${__status}" != 0 ]; then
 fi
 # _REMOTE_USER_HOME is injected by the devcontainer CLI and differs per base image
 # (e.g. /root, /home/vscode). Symlinking here makes ~/.claude resolve to the mount.
-read_param__164_v0 "_REMOTE_USER_HOME" "/root"
-home_38="${ret_read_param164_v0}"
-link_39="${home_38}/.claude"
-echo "Linking ${link_39} -> ${__MOUNT_PATH_3} ..."
-ln -sfn "${__MOUNT_PATH_3}" "${link_39}"
+read_param__165_v0 "_REMOTE_USER_HOME" "/root"
+home_41="${ret_read_param165_v0}"
+link_42="${home_41}/.claude"
+# ln -sfn would silently create the link *inside* an existing real directory
+[ ! -e "${link_42}" ] || [ -L "${link_42}" ]
+__status=$?
+if [ "$(( __status != 0 ))" != 0 ]; then
+    echo_error__138_v0 "${link_42} already exists and is not a symlink. Remove it from the image or install this feature before whatever creates it." 1
+    exit 1
+fi
+echo "Linking ${link_42} -> ${__MOUNT_PATH_3} ..."
+ln -sfn "${__MOUNT_PATH_3}" "${link_42}"
 __status=$?
 if [ "${__status}" != 0 ]; then
     exit "${__status}"

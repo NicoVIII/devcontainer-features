@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning].
 
 - Update amber to 0.6.0-alpha
 
+### Fixed
+
+- `latest` now fails with a clear error when the GitHub API lookup fails (e.g. rate limiting) instead of trying to download a version named "null"
+
 ## [0.1.0] - 2026-04-19
 
 Initial release - supports version property including "latest"

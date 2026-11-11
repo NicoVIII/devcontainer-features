@@ -1,9 +1,15 @@
+import { echo_error } from "std/env"
 import { starts_with, slice } from "std/text"
 
 /// Fetches the latest release version from a GitHub repository API
 pub fun fetch_latest_version(repo_owner: Text, repo_name: Text): Text? {
     const url = "https://api.github.com/repos/{repo_owner}/{repo_name}/releases/latest"
-    return $ curl -sL {url} | jq -r .tag_name $?
+    // Rate-limited and error responses are valid JSON without a tag_name: without -f, -e and
+    // pipefail they would resolve to the version "null" and fail later in the download.
+    return $ set -o pipefail; curl -fsSL {url} | jq -er .tag_name $ failed {
+        echo_error("Could not resolve the latest release of {repo_owner}/{repo_name} via the GitHub API (possibly rate limited). Specify a version instead.")
+        fail 1
+    }
 }
 
 /// Normalizes version by removing leading "v" prefix if present

@@ -1,6 +1,10 @@
-import { env_var_get } from "std/env"
+import { env_var_get, env_var_test } from "std/env"
 
-/// Retrieves an environment variable or returns a default value
+/// Retrieves an environment variable or returns a default value if it is unset
 pub fun read_param(name: Text, default: Text): Text {
-    return env_var_get(name) failed { default }
+    // env_var_get succeeds with "" for an unset variable, so its failure cannot drive the fallback
+    if env_var_test(name) {
+        return trust env_var_get(name)
+    }
+    return default
 }

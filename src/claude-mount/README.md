@@ -23,6 +23,10 @@ Your host `~/.claude` **must exist**: the bind mount uses `docker --mount`, whic
 container creation if the source path is missing. If you have never run Claude Code on the
 host, create it first with `mkdir -p ~/.claude`.
 
+The container's `~/.claude` **must not already exist** as a real directory or file — e.g. baked
+into the image or created by a feature installed earlier. The install fails in that case rather
+than leave the mount unlinked.
+
 
 ---
 

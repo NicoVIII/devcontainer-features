@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
+## [Unreleased]
+
+### Fixed
+
+- `latest` now fails with a clear error when the GitHub API lookup fails (e.g. rate limiting) instead of trying to download a version named "null"
+
 ## [0.1.0] - 2026-06-02
 
 Initial release - supports version property including "latest"

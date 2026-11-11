@@ -1,5 +1,6 @@
 import { prepare } from "../../lib/core.ab"
 import { read_param } from "../../lib/params.ab"
+import { echo_error } from "std/env"
 
 // The devcontainer CLI bind-mounts the host's ~/.claude here (see the "mounts" entry in
 // devcontainer-feature.json). A neutral, user-independent path keeps the symlink target
@@ -13,6 +14,13 @@ main {
     // (e.g. /root, /home/vscode). Symlinking here makes ~/.claude resolve to the mount.
     const home = read_param("_REMOTE_USER_HOME", "/root")
     const link = "{home}/.claude"
+
+    // ln -sfn would silently create the link *inside* an existing real directory
+    trust $ [ ! -e "{link}" ] || [ -L "{link}" ] $
+    if status() != 0 {
+        echo_error("{link} already exists and is not a symlink. Remove it from the image or install this feature before whatever creates it.")
+        fail 1
+    }
 
     echo("Linking {link} -> {MOUNT_PATH} ...")
     $ ln -sfn "{MOUNT_PATH}" "{link}" $?
