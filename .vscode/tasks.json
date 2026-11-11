@@ -57,6 +57,7 @@
                 "lefthook",
                 "oxlint",
                 "roc",
+                "scrut",
             ],
             "type": "pickString"
         }

@@ -1,0 +1,30 @@
+{
+    "debian-default": {
+        "image": "debian:latest",
+        "features": {
+            "scrut": {}
+        }
+    },
+    "debian-specific": {
+        "image": "debian:latest",
+        "features": {
+            "scrut": {
+                "version": "0.4.3"
+            }
+        }
+    },
+    "ubuntu-default": {
+        "image": "ubuntu:latest",
+        "features": {
+            "scrut": {}
+        }
+    },
+    "ubuntu-specific": {
+        "image": "ubuntu:latest",
+        "features": {
+            "scrut": {
+                "version": "0.4.3"
+            }
+        }
+    }
+}

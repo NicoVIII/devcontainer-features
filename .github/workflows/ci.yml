@@ -73,6 +73,7 @@ jobs:
       lefthook_changed: ${{ steps.filter.outputs.lefthook }}
       oxlint_changed: ${{ steps.filter.outputs.oxlint }}
       roc_changed: ${{ steps.filter.outputs.roc }}
+      scrut_changed: ${{ steps.filter.outputs.scrut }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
@@ -114,6 +115,11 @@ jobs:
               - 'lib/**'
               - 'src/roc/**'
               - 'test/roc/**'
+            scrut:
+              - '.github/workflows/**'
+              - 'lib/**'
+              - 'src/scrut/**'
+              - 'test/scrut/**'
 
   # The write permissions below are only a ceiling for the called workflow: its test job drops
   # to read-only, and only its tag-gated publish job uses them.
@@ -186,3 +192,13 @@ jobs:
     uses: ./.github/workflows/reusable-feature.yml
     with:
       feature_name: "roc"
+
+  scrut:
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.scrut_changed == 'true' || startsWith(github.ref, 'refs/tags/scrut-v') }}
+    permissions:
+      contents: write
+      packages: write
+    uses: ./.github/workflows/reusable-feature.yml
+    with:
+      feature_name: "scrut"

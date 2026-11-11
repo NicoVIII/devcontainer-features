@@ -1,0 +1,19 @@
+{
+    "name": "Scrut (via GitHub Releases)",
+    "id": "scrut",
+    "version": "0.1.0",
+    "description": "Scrut is a testing toolkit for CLI applications, with tests written in Markdown or Cram.",
+    "documentationURL": "https://github.com/NicoVIII/devcontainer-features/tree/main/src/scrut",
+    "options": {
+        "version": {
+            "type": "string",
+            "description": "The version of Scrut to install. Use 'latest' to install the latest version.",
+            "proposals": [
+                "latest",
+                "0.5.0",
+                "0.4.3"
+            ],
+            "default": "0.5.0"
+        }
+    }
+}

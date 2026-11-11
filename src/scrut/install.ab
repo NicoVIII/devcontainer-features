@@ -1,0 +1,50 @@
+import { prepare } from "../../lib/core.ab"
+import { get_architecture, ensure_packages } from "../../lib/system.ab"
+import { read_param } from "../../lib/params.ab"
+import { fetch_latest_version, normalize_version, download_file } from "../../lib/download.ab"
+import { extract_archive, install_binary, cleanup_temp_dir } from "../../lib/install.ab"
+
+// Config
+const BINARY_NAME = "scrut"
+const REPO_OWNER = "facebookincubator"
+const REPO_NAME = "scrut"
+const base_packages = ["ca-certificates", "wget"]
+
+main {
+    prepare()?
+
+    // Read parameters
+    let version = read_param("VERSION", "0.5.0")
+
+    // Ensure necessary packages
+    if version == "latest" {
+        ensure_packages(base_packages + ["jq", "curl"])?
+        version = fetch_latest_version(REPO_OWNER, REPO_NAME)?
+    } else {
+        ensure_packages(base_packages)?
+    }
+
+    version = normalize_version(version)
+
+    // Setup temporary directory
+    const temp_dir = "/tmp/scrut-feature"
+    echo("Preparing installation in {temp_dir}...")
+    $ mkdir -p {temp_dir} $?
+    cd(temp_dir)?
+
+    const arch = get_architecture()?
+    const dir_name = "{BINARY_NAME}-linux-{arch}"
+    const filename = "{BINARY_NAME}-v{version}-linux-{arch}.tar.gz"
+    const url = "https://github.com/{REPO_OWNER}/{REPO_NAME}/releases/download/v{version}/{filename}"
+
+    echo("Installing {BINARY_NAME} {version}...")
+    download_file(url, filename)?
+    extract_archive(filename)?
+    install_binary("{dir_name}/{BINARY_NAME}", BINARY_NAME, "/usr/local/bin")?
+    // Up to v0.5.0 the linux-aarch64 archives held x86_64 binaries: fail here, not on first use.
+    $ /usr/local/bin/{BINARY_NAME} --version $?
+
+    // Clean up
+    cleanup_temp_dir(temp_dir)?
+    echo("Done!")
+}
