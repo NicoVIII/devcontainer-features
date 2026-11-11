@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog],
 and this project adheres to [Semantic Versioning].
 
-## [Unreleased]
+## [0.1.1] - 2026-11-11
 
 ### Changed
 
@@ -24,4 +24,5 @@ Initial release - supports version property excluding "latest"
 [semantic versioning]: https://semver.org/spec/v2.0.0.html
 
 <!-- Versions -->
+[0.1.1]: https://github.com/NicoVIII/devcontainer-features/compare/oxlint-v0.1.0...oxlint-v0.1.1
 [0.1.0]: https://github.com/NicoVIII/devcontainer-features/releases/tag/oxlint-v0.1.0
