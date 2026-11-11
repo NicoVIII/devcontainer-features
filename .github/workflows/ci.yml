@@ -22,10 +22,10 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Amber
-        uses: lens0021/setup-amber@v2
+        uses: lens0021/setup-amber@385b135a8646e1bf684d6b6e209ea0bdc8f99740 # v2
         with:
           amber-version: 0.6.0-alpha
 
@@ -74,8 +74,8 @@ jobs:
       oxlint_changed: ${{ steps.filter.outputs.oxlint }}
       roc_changed: ${{ steps.filter.outputs.roc }}
     steps:
-      - uses: actions/checkout@v7
-      - uses: dorny/paths-filter@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: filter
         with:
           filters: |
@@ -115,6 +115,8 @@ jobs:
               - 'src/roc/**'
               - 'test/roc/**'
 
+  # The write permissions below are only a ceiling for the called workflow: its test job drops
+  # to read-only, and only its tag-gated publish job uses them.
   amber:
     needs: detect-changes
     if: ${{ needs.detect-changes.outputs.amber_changed == 'true' || startsWith(github.ref, 'refs/tags/amber-v') }}
@@ -124,7 +126,6 @@ jobs:
     uses: ./.github/workflows/reusable-feature.yml
     with:
       feature_name: "amber"
-    secrets: inherit
 
   claude-mount:
     needs: detect-changes
@@ -135,7 +136,6 @@ jobs:
     uses: ./.github/workflows/reusable-feature.yml
     with:
       feature_name: "claude-mount"
-    secrets: inherit
 
   gleam:
     needs: detect-changes
@@ -146,7 +146,6 @@ jobs:
     uses: ./.github/workflows/reusable-feature.yml
     with:
       feature_name: "gleam"
-    secrets: inherit
 
   just:
     needs: detect-changes
@@ -157,7 +156,6 @@ jobs:
     uses: ./.github/workflows/reusable-feature.yml
     with:
       feature_name: "just"
-    secrets: inherit
 
   lefthook:
     needs: detect-changes
@@ -168,7 +166,6 @@ jobs:
     uses: ./.github/workflows/reusable-feature.yml
     with:
       feature_name: "lefthook"
-    secrets: inherit
 
   oxlint:
     needs: detect-changes
@@ -179,7 +176,6 @@ jobs:
     uses: ./.github/workflows/reusable-feature.yml
     with:
       feature_name: "oxlint"
-    secrets: inherit
 
   roc:
     needs: detect-changes
@@ -190,4 +186,3 @@ jobs:
     uses: ./.github/workflows/reusable-feature.yml
     with:
       feature_name: "roc"
-    secrets: inherit
