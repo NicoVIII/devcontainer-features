@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning].
 ### Changed
 
 - Update amber to 0.6.0-alpha
+- Propose `0.6.0-alpha` instead of the outdated `0.5.1-alpha` for the `version` option
 
 ### Fixed
 

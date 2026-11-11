@@ -10,7 +10,7 @@
             "description": "The version of Amber to install. Use 'latest' to install the latest version.",
             "proposals": [
                 "latest",
-                "0.5.1-alpha"
+                "0.6.0-alpha"
             ],
             "default": "latest"
         }

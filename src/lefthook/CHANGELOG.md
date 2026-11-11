@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning].
 
 ### Fixed
 
+- Match the checksum manifest entry by exact file name instead of by substring
 - `latest` now fails with a clear error when the GitHub API lookup fails (e.g. rate limiting) instead of trying to download a version named "null"
 
 ## [0.1.0] - 2026-04-19
